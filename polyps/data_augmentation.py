@@ -90,12 +90,16 @@ if __name__ == "__main__":
 
     # In the folder input, there is two subfolders, the first with pictures and the second with the masks.
     # Same for output folder
-        
-    folderInput = "C:\\Users\\Mathieu\\Google Drive\\SDU\\DSC\\Project\\Data Science\\Polyps_with_label\\Mathieu"
-    folderOutput = "C:\\Users\\Mathieu\\Google Drive\\SDU\\DSC\\Project\\DataPlop"
+    
+    if sys.platform == 'linux':
+        folderInput = "./"
+        folderOutput = "./input"
+    else:
+        folderInput = ".\\"
+        folderOutput = ".\\input"
     picture_multiplier = 1 # Output number = ${picture_multiplier} * Input_number
-    classData="Data" # name of the subfolder containing the picures
-    classLabel="Label" # name of the subfolder containing the markers
+    classData="data" # name of the subfolder containing the picures
+    classLabel="label" # name of the subfolder containing the markers
     
     # This function will generate the pictures/marker
     # /!\ All of files inside the both subfolders of the Output folder will be delete before.
