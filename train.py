@@ -4,7 +4,7 @@ import glob
 import numpy as np
 from PIL import Image
 from keras.optimizers import Adam
-import sys
+import platform
 
 import random
 
@@ -62,14 +62,16 @@ if __name__ == "__main__":
     batch_size = 64
     model = model.u_net() #what does the Adam optimizer do
     model.compile(optimizer = Adam(lr = 1e-4), loss = 'categorical_crossentropy' , metrics = ['accuracy'])#,pixel_accuracy])
-    if sys.platform == 'linux':
-        im = np.array(load_transform_pictures('polyps/input/data/*.jpg'))
-        test = np.array(load_transform_pictures('polyps/test/*.jpg'))
-        output = "polyps/output/"
-    else:
+
+    if platform.system() == 'Windows':
         im = np.array(load_transform_pictures('polyps\\input\\data\\*.jpg'))
         test = np.array(load_transform_pictures('polyps\\test\\*.jpg'))
         output="polyps\\output\\"
+    else:
+        im = np.array(load_transform_pictures('polyps/input/data/*.jpg'))
+        test = np.array(load_transform_pictures('polyps/test/*.jpg'))
+        output = "polyps/output/"
+    
     mask = np.array(data_transformation.create_binary_masks()) 
     model.fit(x = im,y=mask,
                         steps_per_epoch = 1048//batch_size,#1048//batch_size,
