@@ -6,12 +6,11 @@ import glob
 
 def createGenerator():
     return  ImageDataGenerator(
-            #rotation_range=45, # Degree range for random rotations
-            zoom_range= (0.8,1), # Range for random zoom (<1 : zoom in)
-            width_shift_range=0.01, 
-            height_shift_range=0.01, # shift by fraction of total height
+            #zoom_range= (0.8,1), # Range for random zoom (<1 : zoom in)
+            #width_shift_range=0.01, 
+            #height_shift_range=0.01, # shift by fraction of total height
+            #rotation_range = 45,  # Degree range for random rotations
             brightness_range = (0.75,1.25),
-            rotation_range = 45,
             horizontal_flip=True,  # randomly flip images
             vertical_flip=True  # randomly flip images
         )
