@@ -92,10 +92,10 @@ if __name__ == "__main__":
     # Same for output folder
     
     if sys.platform == 'linux':
-        folderInput = "./"
+        folderInput = "./origin"
         folderOutput = "./input"
     else:
-        folderInput = ".\\"
+        folderInput = ".\\origin"
         folderOutput = ".\\input"
     picture_multiplier = 1 # Output number = ${picture_multiplier} * Input_number
     classData="data" # name of the subfolder containing the picures
