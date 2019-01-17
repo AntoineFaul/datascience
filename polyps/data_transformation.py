@@ -25,7 +25,7 @@ def createMask( folderIn, folderOut, masks, masks_namesPrefixe = None):
     # Suppresion of the files inside the output folder
     fileList = os.listdir(folderOut)
     for fileName in fileList:
-        os.remove(folderOut+"\\"+fileName)
+        os.remove(folderOut+path_separator+fileName)
     
     names = os.listdir(folderIn)
     # Configuration of the output files prefixes
@@ -49,7 +49,7 @@ def createMask( folderIn, folderOut, masks, masks_namesPrefixe = None):
         for i in range(len(masks)):
             imOut = cv.inRange(	picture, masks[i], masks[i])
             #print( "out : " + folderOut + "\\" + prefixes[i] + "_" + names[cpt] +"\n")
-            cv.imwrite( folderOut + "path_separator" + prefixes[i] + "_" + names[cpt], imOut)
+            cv.imwrite( folderOut + path_separator + prefixes[i] + "_" + names[cpt], imOut)
             imOut = imOut/255
             store_im.append(imOut)
         print("Picture " + str(cpt))
