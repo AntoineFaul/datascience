@@ -26,13 +26,9 @@ if __name__ == "__main__":
     if sys.platform == 'linux':
         im = np.array(load_transform_pictures('polyps/data/*.jpg'))
         test = np.array(load_transform_pictures('polyps/test/*.jpg'))
-	        
-        print(im)
-        print("--------------------------------------")
-        print(test)    
     else:
-        im = np.array(load_transform_pictures('C:\\Users\\MaxSchemmer\\Documents\\Data\\polyps_test_2\\Data\\*.jpg'))
-        test = np.array(load_transform_pictures('C:\\Users\\MaxSchemmer\\Documents\\Data\\polyps_test_2\\Data\\test\\*.jpg'))
+        im = np.array(load_transform_pictures('polyps\\data\\*.jpg'))
+        test = np.array(load_transform_pictures('polyps\\data\\*.jpg'))
     mask = np.array(data_transformation.create_binary_masks()) 
     print(mask)
     model.fit(x = im,y=mask,

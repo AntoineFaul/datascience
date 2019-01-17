@@ -63,8 +63,8 @@ def create_binary_masks():
         fileIn = 'polyps/label/'
         fileOut = 'polyps/output/label'
     else:
-        fileIn = "C:\\Users\\MaxSchemmer\\Documents\\Data\\polyps_test_2\\Label"
-        fileOut = "C:\\Users\\MaxSchemmer\\Documents\\Data\\polyps_test_2\\Output\\Label"
+        fileIn = "polyps\\label"
+        fileOut = "polyps\\output\\label"
     
     # mask to create 
     masks = np.array([[0,0,0], #background = black
