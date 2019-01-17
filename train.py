@@ -10,11 +10,9 @@ import random
 
 
 def load_transform_pictures(folder):
-    maxsize = (224,224)
     x_train=[]
     for filename in glob.glob(folder):
         im=Image.open(filename)
-        im.thumbnail(maxsize) # find other technique
         im = np.array(im,dtype="float32")
         im = im /255 # for learing faster
         x_train.append(im)
@@ -71,7 +69,7 @@ if __name__ == "__main__":
         im = np.array(load_transform_pictures('polyps/input/data/*.jpg'))
         test = np.array(load_transform_pictures('polyps/test/*.jpg'))
         output = "polyps/output/"
-    
+
     mask = np.array(data_transformation.create_binary_masks()) 
     model.fit(x = im,y=mask,
                         steps_per_epoch = 1048//batch_size,#1048//batch_size,
