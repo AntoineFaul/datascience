@@ -60,10 +60,10 @@ def create_binary_masks():
     
     # folders
     if sys.platform == 'linux':
-        fileIn = 'polyps/label/'
+        fileIn = 'polyps/input/label/'
         fileOut = 'polyps/output/label'
     else:
-        fileIn = "polyps\\label"
+        fileIn = "polyps\\input\\label"
         fileOut = "polyps\\output\\label"
     
     # mask to create 
