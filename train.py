@@ -63,12 +63,12 @@ if __name__ == "__main__":
     model = model.u_net() #what does the Adam optimizer do
     model.compile(optimizer = Adam(lr = 1e-4), loss = 'categorical_crossentropy' , metrics = ['accuracy'])#,pixel_accuracy])
     if sys.platform == 'linux':
-        im = np.array(load_transform_pictures('polyps/data/*.jpg'))
+        im = np.array(load_transform_pictures('polyps/input/data/*.jpg'))
         test = np.array(load_transform_pictures('polyps/test/*.jpg'))
         output = "polyps/output/"
     else:
-        im = np.array(load_transform_pictures('polyps\\data\\*.jpg'))
-        test = np.array(load_transform_pictures('polyps\\data\\*.jpg'))
+        im = np.array(load_transform_pictures('polyps\\input\\data\\*.jpg'))
+        test = np.array(load_transform_pictures('polyps\\test\\*.jpg'))
         output="polyps\\output\\"
     mask = np.array(data_transformation.create_binary_masks()) 
     model.fit(x = im,y=mask,
