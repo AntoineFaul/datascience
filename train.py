@@ -47,13 +47,15 @@ def merge(array):
     return(final_images)
     
 def write_image(array, directory):
+    index = 0
     for image in array:
+        index = index +1
         img = Image.new("RGB", (224,224), "white")
         for i in range(224):
             for j in range(224):
                 
                 img.putpixel((i,j),image[i][j])
-        name = str(int(random.random()*10000000))+ "_output.jpg"
+        name = '{0:04}'.format(index) + "_output.jpg"
         img.save(directory+name)
 
 if __name__ == "__main__":
