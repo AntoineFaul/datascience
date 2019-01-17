@@ -2,8 +2,14 @@ import cv2 as cv
 import numpy as np
 import glob
 import os
+import sys
 
 from PIL import Image
+
+if sys.platform == 'linux':
+    path_separator = '/'
+else:
+    path_separator = '\\'
 
 def pixelsVerification( picture):
     
@@ -29,7 +35,7 @@ def createMask( folderIn, folderOut, masks, masks_namesPrefixe = None):
         prefixes = [str(i) for i in range(len(masks))]
     store_im = []
     cpt = 0
-    for filename in glob.glob(folderIn+"\\"+"*.jpg"):
+    for filename in glob.glob(folderIn+path_separator+"*.jpg"):
         im = Image.open(filename)
         im.thumbnail(maxsize)
         # conversion to numpy array 
@@ -43,7 +49,7 @@ def createMask( folderIn, folderOut, masks, masks_namesPrefixe = None):
         for i in range(len(masks)):
             imOut = cv.inRange(	picture, masks[i], masks[i])
             #print( "out : " + folderOut + "\\" + prefixes[i] + "_" + names[cpt] +"\n")
-            cv.imwrite( folderOut + "\\" + prefixes[i] + "_" + names[cpt], imOut)
+            cv.imwrite( folderOut + "path_separator" + prefixes[i] + "_" + names[cpt], imOut)
             imOut = imOut/255
             store_im.append(imOut)
         print("Picture " + str(cpt))
@@ -53,8 +59,12 @@ def createMask( folderIn, folderOut, masks, masks_namesPrefixe = None):
 def create_binary_masks():
     
     # folders
-    fileIn = "C:\\Users\\MaxSchemmer\\Documents\\Data\\polyps_test_2\\Label"
-    fileOut = "C:\\Users\\MaxSchemmer\\Documents\\Data\\polyps_test_2\\Output\\Label"
+    if sys.platform == 'linux':
+        fileIn = 'polyps/label/'
+        fileOut = 'polyps/output/label'
+    else:
+        fileIn = "C:\\Users\\MaxSchemmer\\Documents\\Data\\polyps_test_2\\Label"
+        fileOut = "C:\\Users\\MaxSchemmer\\Documents\\Data\\polyps_test_2\\Output\\Label"
     
     # mask to create 
     masks = np.array([[0,0,0], #background = black
@@ -68,8 +78,9 @@ def create_binary_masks():
     # be the index of the mask in the Array masks
     # /!\ All of files of the Output folder will be delete before.
     plop =  createMask( folderIn=fileIn, folderOut=fileOut, masks = masks)
+    print(plop)
     chunks = [np.swapaxes(np.array(plop[x:x+4]),0,2) for x in range(0, len(plop), 4)]  
-
+    
     
     print("END\n")
     return(chunks)
