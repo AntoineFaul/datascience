@@ -96,7 +96,7 @@ if __name__ == "__main__":
 #    data_augmentation.execute()
 
     batch_size = 64
-    model = model.u_net(IMG_SIZE = (256,256,3)) #what does the Adam optimizer do
+    model = model.u_net(IMG_SIZE = (224,224,3)) #what does the Adam optimizer do
 
     model.compile(optimizer = Adam(lr = 1e-4), loss = 'categorical_crossentropy' , metrics = ['accuracy',dice_coef,jacard_coef])# old learning rate 1e-4, pixel_accuracy])
 
