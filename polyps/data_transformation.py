@@ -41,16 +41,15 @@ def createMask(folderIn, folderOut, masks, masks_namesPrefixe = None):
             cv.imwrite(make_path(folderOut, prefixes[i] + '_' + names[cpt]), imOut)
             store_im.append(imOut/255)
 
-        print("Picture " + str(cpt))
+        print("\rPicture - " + str(cpt), end='')
         cpt += 1
 
     return(store_im)
  
 def create_binary_masks(path):
-    # folders
-#    fileIn = make_path('polyps', 'input', 'label')
-    
     fileOut = make_path('polyps', 'output', 'label')
+
+    print("\rCreate Binary Masks from folder: " + path)
     
     # mask to create 
     masks = np.array([[0, 0, 0], #background = black
@@ -64,6 +63,6 @@ def create_binary_masks(path):
     # /!\ All of files of the Output folder will be delete before.
     plop = createMask(folderIn = path, folderOut = fileOut, masks = masks)
     chunks = [np.swapaxes(np.array(plop[x:x+4]), 0, 2) for x in range(0, len(plop), 4)]  
-    
-    print("END\n")
+
+    print("\rDone. (Nb = " + str(len(chunks)) + ")\n")
     return(chunks)

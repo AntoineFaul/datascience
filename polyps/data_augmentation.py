@@ -1,5 +1,8 @@
 from keras.preprocessing.image import ImageDataGenerator
-from polyps.file_manager import make_path, clean_folder_group
+try:
+    from polyps.file_manager import make_path, clean_folder_group
+except ImportError:
+    from file_manager import make_path, clean_folder_group
 from random  import choice
 import glob
 import os
@@ -81,3 +84,5 @@ def execute():
     # /!\ All of files inside the both subfolders of the Output folder will be delete before.
     dataWithLabel_Generator(picture_multiplier)
     extract_data_test()
+
+    print("Augmentation done.\n")

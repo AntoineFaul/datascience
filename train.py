@@ -3,14 +3,11 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint
 from polyps import data_augmentation, data_transformation, file_manager as fm
 from keras.optimizers import Adam
 from PIL import Image
+from keras import backend as K #use tensors
 import numpy as np
 import glob
-import numpy as np
-from PIL import Image
-from keras.optimizers import Adam
 import model
 import matplotlib.pyplot as plt
-import keras.backend as K
 
 
 def load_transform_pictures(folder):
@@ -94,10 +91,10 @@ def dice_coef_loss(y_true, y_pred):
 if __name__ == "__main__":
     data_augmentation.execute()
 
-    batch_size = 50
+    batch_size = 64
     model = model.u_net(IMG_SIZE = (224,224,3)) #what does the Adam optimizer do
 
-    model.compile(optimizer = Adam(lr = 1e-4), loss = 'categorical_crossentropy' , metrics = ['accuracy'])#, pixel_accuracy])
+    model.compile(optimizer = Adam(lr = 1e-4), loss = 'categorical_crossentropy' , metrics = ['accuracy',dice_coef,jacard_coef])# old learning rate 1e-4, pixel_accuracy])
 
     im = np.array(load_transform_pictures(fm.make_path('polyps', 'input', 'data', '*.jpg')))
     test = np.array(load_transform_pictures(fm.make_path('polyps', 'test','data', '*.jpg')))
@@ -115,14 +112,16 @@ if __name__ == "__main__":
                         validation_split = 0.2,
                         epochs = 1,
                         batch_size=batch_size,
-#                        callbacks=[checkpointer]
-                        callbacks =[earlystopper]
+#                        validation_steps = 128//batch_size,
+                        callbacks =[earlystopper
+#                                    ,checkpointer #if you want to save the model
+                                   ]     
                         )
     
     lab_pred = model.predict(test, verbose=1)
     evaluate = model.evaluate(x=test, y=mask_test,batch_size=batch_size)
     display_im = write_image(merge(lab_pred),output)
     plt.imshow(display_im[0])#plots the first picture
-    print("Evaluation : {}".format(evaluate))
+    print("Evaluation : Loss: "+ str(evaluate[0])+", Accuracy: " + str(evaluate[1])+", Dice Coefficient: " + str(evaluate[2])+", Jacard Coefficient: " + str(evaluate[3]))
     
 
