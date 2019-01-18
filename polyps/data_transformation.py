@@ -21,7 +21,8 @@ def createMask(folderIn, folderOut, masks, masks_namesPrefixe = None):
     # Suppresion of the files inside the output folder
     clean_folder(folderOut)
     names = os.listdir(folderIn)
-    names.remove('.gitkeep')
+    if '.gitkeep' in names:
+        names.remove('.gitkeep')
 
     # Configuration of the output files prefixes
     if masks_namesPrefixe and len(masks) == len(masks_namesPrefixe):
@@ -45,9 +46,10 @@ def createMask(folderIn, folderOut, masks, masks_namesPrefixe = None):
 
     return(store_im)
  
-def create_binary_masks():
+def create_binary_masks(path):
     # folders
-    fileIn = make_path('polyps', 'input', 'label')
+#    fileIn = make_path('polyps', 'input', 'label')
+    
     fileOut = make_path('polyps', 'output', 'label')
     
     # mask to create 
@@ -60,7 +62,7 @@ def create_binary_masks():
     # if the masks_namesPrefixe is not define, the prefix of the pictures will
     # be the index of the mask in the Array masks
     # /!\ All of files of the Output folder will be delete before.
-    plop = createMask(folderIn = fileIn, folderOut = fileOut, masks = masks)
+    plop = createMask(folderIn = path, folderOut = fileOut, masks = masks)
     chunks = [np.swapaxes(np.array(plop[x:x+4]), 0, 2) for x in range(0, len(plop), 4)]  
     
     print("END\n")

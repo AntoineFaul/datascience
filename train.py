@@ -7,7 +7,6 @@ import glob
 import numpy as np
 from PIL import Image
 from keras.optimizers import Adam
-import random
 import model
 
 
@@ -68,24 +67,26 @@ def write_image(array, directory):
 
 if __name__ == "__main__":
     batch_size = 50
-    model = model.u_net() #what does the Adam optimizer do
+    model = model.u_net(IMG_SIZE = (256,256,3)) #what does the Adam optimizer do
 
     model.compile(optimizer = Adam(lr = 1e-4), loss = 'categorical_crossentropy' , metrics = ['accuracy'])#, pixel_accuracy])
 
     im = np.array(load_transform_pictures(fm.make_path('polyps', 'input', 'data', '*.jpg')))
-    test = np.array(load_transform_pictures(fm.make_path('polyps', 'test', '*.jpg')))
+    test = np.array(load_transform_pictures(fm.make_path('polyps', 'test','data', '*.jpg')))
     output = fm.make_path('polyps', 'output')
-
-    mask = np.array(data_transformation.create_binary_masks()) 
+    path = fm.make_path('polyps', 'input', 'label')
+    path_test = fm.make_path('polyps', 'test', 'label')
+    mask = np.array(data_transformation.create_binary_masks(path=path)) 
+    mask_test = np.array(data_transformation.create_binary_masks(path = path_test))
     #earlystopper = EarlyStopping(patience=20, verbose=1)
-    checkpointer = ModelCheckpoint('model-polyp.h5', verbose=1, save_best_only=True)
+#    checkpointer = ModelCheckpoint('model-polyp.h5', verbose=1, save_best_only=True)
     model.fit(x = im,y=mask,
                         validation_split = 0.2,
                         epochs = 1,
                         batch_size=20,
-                        callbacks=[checkpointer]
+#                        callbacks=[checkpointer]
                         )
     
     lab_pred = model.predict(test, verbose=1)
-
+    evaluate = model.evaluate(x=test, y=mask_test)
     write_image(merge(lab_pred),output)
