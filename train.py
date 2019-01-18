@@ -1,8 +1,9 @@
 from keras.models import Model, load_model
 from keras.callbacks import EarlyStopping, ModelCheckpoint
-from polyps import data_transformation
-from polyps import file_manager as fm #import make_path, load_image
-from platform import system as getSystem
+from polyps import data_augmentation, data_transformation, file_manager as fm
+from keras.optimizers import Adam
+from PIL import Image
+import numpy as np
 import glob
 import numpy as np
 from PIL import Image
@@ -91,6 +92,7 @@ def dice_coef_loss(y_true, y_pred):
     return -dice_coef(y_true, y_pred)
 
 if __name__ == "__main__":
+    data_augmentation.execute()
 
     batch_size = 50
     model = model.u_net(IMG_SIZE = (224,224,3)) #what does the Adam optimizer do
