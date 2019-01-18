@@ -1,4 +1,5 @@
 from platform import system as getSystem
+from file_manager import make_path, load_image, clean_folder
 import cv2 as cv
 from PIL import Image
 import numpy as np
@@ -6,20 +7,6 @@ import glob
 import os
 
 
-if getSystem() == 'Windows':
-    path_separator = '\\'
-else:
-    path_separator = '/'
-
-
-def load_image(filename):
-    im = Image.open(filename)
-    # conversion to numpy array
-    # each pixels are represented by floating points
-    im = np.array(im, dtype="float32")
-    im /= 255
-
-    return im
 
 def pixelsVerification(picture):
     (rows, cols, channels) = np.shape(picture)
@@ -32,15 +19,11 @@ def pixelsVerification(picture):
         
 def createMask(folderIn, folderOut, masks, masks_namesPrefixe = None):
     # Suppresion of the files inside the output folder
-    fileList = os.listdir(folderOut)
-
-    for fileName in fileList:
-        os.remove(folderOut+path_separator+fileName)
-    
+    clean_folder(folderOut)
     names = os.listdir(folderIn)
 
     # Configuration of the output files prefixes
-    if masks_namesPrefixe and len(masks)==len(masks_namesPrefixe):
+    if masks_namesPrefixe and len(masks) == len(masks_namesPrefixe):
         prefixes = masks_namesPrefixe
     else:
         prefixes = [str(i) for i in range(len(masks))]
@@ -48,15 +31,13 @@ def createMask(folderIn, folderOut, masks, masks_namesPrefixe = None):
     store_im = []
     cpt = 0
 
-    for filename in glob.glob(folderIn+path_separator+"*.jpg"):
-        im = load_image(filename)
-        picture = pixelsVerification(im)
+    for filename in glob.glob(make_path(folderIn, '*.jpg')):
+        picture = pixelsVerification(load_image(filename))
         
         for i in range(len(masks)):
-            imOut = cv.inRange(	picture, masks[i], masks[i])
-            cv.imwrite(folderOut + path_separator + prefixes[i] + '_' + names[cpt], imOut)
-            imOut = imOut/255
-            store_im.append(imOut)
+            imOut = cv.inRange(picture, masks[i], masks[i])
+            cv.imwrite(make_path(folderOut, prefixes[i] + '_' + names[cpt], imOut)
+            store_im.append(imOut/255)
 
         print("Picture " + str(cpt))
         cpt += 1
@@ -65,12 +46,8 @@ def createMask(folderIn, folderOut, masks, masks_namesPrefixe = None):
  
 def create_binary_masks():
     # folders
-    if getSystem() == 'Windows':
-        fileIn = 'polyps\\input\\label'
-        fileOut = 'polyps\\output\\label'
-    else:
-        fileIn = 'polyps/input/label/'
-        fileOut = 'polyps/output/label'
+    fileIn = make_path('polyps', 'input', 'label')
+    fileOut = make_path('polyps', 'output', 'label')
     
     # mask to create 
     masks = np.array([[0, 0, 0], #background = black

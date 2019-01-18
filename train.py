@@ -1,21 +1,21 @@
-
-import model
 from keras.models import Model, load_model
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from polyps import data_transformation
+from file_manager import make_path, load_image
 from platform import system as getSystem
 import glob
 import numpy as np
 from PIL import Image
 from keras.optimizers import Adam
 import random
+import model
 
 
 def load_transform_pictures(folder):
     x_train = []
 
     for filename in glob.glob(folder):
-        im = data_transformation.load_image(filename)
+        im = load_image(filename)
         x_train.append(im)
 
     return(x_train)
@@ -72,26 +72,18 @@ if __name__ == "__main__":
 
     model.compile(optimizer = Adam(lr = 1e-4), loss = 'categorical_crossentropy' , metrics = ['accuracy'])#, pixel_accuracy])
 
-    if getSystem() == 'Windows':
-        im = np.array(load_transform_pictures('polyps\\input\\data\\*.jpg'))
-        test = np.array(load_transform_pictures('polyps\\test\\*.jpg'))
-        output="polyps\\output\\"
-    else:
-        im = np.array(load_transform_pictures('polyps/input/data/*.jpg'))
-        test = np.array(load_transform_pictures('polyps/test/*.jpg'))
-        output = "polyps/output/"
+    im = np.array(load_transform_pictures(make_path('polyps', 'input', 'data', '*.jpg')))
+    test = np.array(load_transform_pictures(make_path('polyps', 'test', '*.jpg')))
+    output = make_path('polyps', 'output')
 
     mask = np.array(data_transformation.create_binary_masks()) 
-    #earlystopper = EarlyStopping(patience=20, verbose=1)
-    checkpointer = ModelCheckpoint('model-polyp.h5', verbose=1, save_best_only=True)
-    model.fit(x = im,y=mask,
-                        #steps_per_epoch = 1048//batch_size,#1048//batch_size,
-                        validation_split = 0.2,
-                        #validation_steps = 128//batch_size,
-                        epochs = 500,
-                        batch_size=16,
-                        callbacks=[checkpointer]
-                        )
+    model.fit(x = im,
+                y = mask,
+                steps_per_epoch = 1048//batch_size,
+                validation_split = 0.2,
+                validation_steps = 128//batch_size,
+                epochs = 1
+            )
     
     model = load_model('model-polyp.h5')
     lab_pred = model.predict(test, verbose=1)

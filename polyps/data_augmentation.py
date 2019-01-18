@@ -1,5 +1,5 @@
 from keras.preprocessing.image import ImageDataGenerator
-from platform import system as getSystem
+from file_manager import make_path, clean_folder
 import os
 import glob
 import platform
@@ -32,22 +32,16 @@ def generator_flow(image_path, newImage_path, batch_size, classData):
         )
 
 def dataWithLabel_Generator(multiplier, image_path, newImage_path, classData, classLabel):
-    generator = createGenerator()
-
-    fileList = os.listdir(newImage_path+"\\"+classData)
-
-    for fileName in fileList:
-        os.remove(newImage_path+"\\"+classData+"\\"+fileName)
-        
+    clean_folder(newImage_path+PATH_SEP+classData)
     fileList = os.listdir(newImage_path+"\\"+classLabel)
 
     for fileName in fileList:
         os.remove(newImage_path+"\\"+classLabel+"\\"+fileName)
 
-    path1 = image_path+"\\"+classData+"\\*.jpg"
-    path2 = image_path+"\\"+classLabel+"\\*.jpg"
-    print("\nAugmentation of classe : " + image_path + "\\" + classData)
-    print("Augmentation of classe : " + image_path + "\\" + classLabel + "\n")
+    path1 = make_path(image_path, classData, "*.jpg")
+    path2 = make_path(image_path, classLabel, "*.jpg")
+    print("\nAugmentation of classe : " + make_path(image_path, classData))
+    print("Augmentation of classe : " + make_path(image_path, classLabel, "*.jpg"))
 
     imageGenerator = generator_flow(image_path, newImage_path, len(glob.glob(path1)), classData)
     maskGenerator = generator_flow(image_path, newImage_path, len(glob.glob(path2)), classLabel)
@@ -62,13 +56,8 @@ def dataWithLabel_Generator(multiplier, image_path, newImage_path, classData, cl
 if __name__ == "__main__":
     # In the folder input, there is two subfolders, the first with pictures and the second with the masks.
     # Same for output folder
-    
-    if getSystem() == 'Windows':
-        folderInput = ".\\origin"
-        folderOutput = ".\\input"
-    else:
-        folderInput = "./origin"
-        folderOutput = "./input"
+    folderInput = make_path('origin')
+    folderOutput = make_path('input')
 
     picture_multiplier = 4 # Output number = ${picture_multiplier} * Input_number
     classData="data" # name of the subfolder containing the picures
@@ -76,4 +65,4 @@ if __name__ == "__main__":
     
     # This function will generate the pictures/marker
     # /!\ All of files inside the both subfolders of the Output folder will be delete before.
-    dataWithLabel_Generator(multiplier=picture_multiplier, image_path=folderInput, newImage_path=folderOutput, classData=classData, classLabel=classLabel)
+    dataWithLabel_Generator(multiplier = picture_multiplier, image_path = folderInput, newImage_path = folderOutput, classData = classData, classLabel = classLabel)
