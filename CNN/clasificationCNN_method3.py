@@ -13,6 +13,8 @@ import polyps.file_manager as fm
 #folder = "C:\\Users\\Mathieu\\Google Drive\\SDU\\DSC\\Project\\Data"
 folderTest = fm.make_path( "polyps", "cnn_dataAugmented", "Test")
 folderTrain = fm.make_path( "polyps", "cnn_dataAugmented", "Train")
+folderModel = fm.make_path("CNN","modelSave")
+nameModel = "toDelete"
 maxsize = (64, 64)
 perCent_Test = 0.8
 perCent_Validation = 0.8
@@ -100,12 +102,12 @@ if __name__ == "__main__":
     
     # serialize model to JSON
     model_json = model1.to_json()
-    with open("modelPlop.json", "w") as json_file:
+    with open(fm.make_path(folderModel, nameModel+".json"), "w") as json_file:
         json_file.write(model_json)
     
     # serialize weights to HDF5
-    model1.save_weights("modelPlop.h5")
+    model1.save_weights(fm.make_path(folderModel, nameModel+".h5"))
     print("Saved model to disk")
     
-    with open('historyPlop.pkl', 'wb') as output:  # Overwrites any existing file.
+    with open(fm.make_path(folderModel, nameModel+".pkl"), 'wb') as output:  # Overwrites any existing file.
         pickle.dump(history1, output, pickle.HIGHEST_PROTOCOL)
