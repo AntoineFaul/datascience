@@ -1,4 +1,6 @@
 import model
+from keras.models import Model, load_model
+from keras.callbacks import EarlyStopping, ModelCheckpoint
 from polyps import data_transformation
 import glob
 import numpy as np
@@ -59,7 +61,7 @@ def write_image(array, directory):
         img.save(directory+name)
 
 if __name__ == "__main__":
-    batch_size = 64
+    batch_size = 50
     model = model.u_net() #what does the Adam optimizer do
     model.compile(optimizer = Adam(lr = 1e-4), loss = 'categorical_crossentropy' , metrics = ['accuracy'])#,pixel_accuracy])
 
@@ -73,13 +75,18 @@ if __name__ == "__main__":
         output = "polyps/output/"
     
     mask = np.array(data_transformation.create_binary_masks()) 
+    #earlystopper = EarlyStopping(patience=20, verbose=1)
+    checkpointer = ModelCheckpoint('model-polyp.h5', verbose=1, save_best_only=True)
     model.fit(x = im,y=mask,
-                        steps_per_epoch = 1048//batch_size,#1048//batch_size,
+                        #steps_per_epoch = 1048//batch_size,#1048//batch_size,
                         validation_split = 0.2,
-                        validation_steps = 128//batch_size,
-                        epochs = 5, 
+                        #validation_steps = 128//batch_size,
+                        epochs = 500,
+                        batch_size=16,
+                        callbacks=[checkpointer]
                         )
     
-        
-    lab_pred = model.predict(test)
+    model = load_model('model-polyp.h5')
+    lab_pred = model.predict(test, verbose=1)
+
     write_image(merge(lab_pred),output)

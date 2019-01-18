@@ -3,7 +3,6 @@ import numpy as np
 import glob
 import os
 import sys
-
 from PIL import Image
 
 if sys.platform == 'linux':
@@ -63,8 +62,8 @@ def create_binary_masks():
         fileIn = 'polyps/input/label/'
         fileOut = 'polyps/output/label'
     else:
-        fileIn = "polyps\\input\\label"
-        fileOut = "polyps\\output\\label"
+        fileIn = ".\\polyps\\input\\label"
+        fileOut = ".\\polyps\\output\\label"
     
     # mask to create 
     masks = np.array([[0,0,0], #background = black

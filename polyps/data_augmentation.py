@@ -2,6 +2,7 @@ from keras.preprocessing.image import ImageDataGenerator
 import platform
 import os
 import glob
+import platform
 
 
 def createGenerator():
@@ -45,6 +46,7 @@ def dataWithLabel_Generator( multiplier, image_path, newImage_path, classData, c
     generatorData = createGenerator()        
     generatorLabel = createGenerator()        
             
+
     fileList = os.listdir(newImage_path+"\\"+classData)
 
     for fileName in fileList:
