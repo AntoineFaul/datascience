@@ -16,6 +16,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Conv2D, Flatten, MaxPooling2D, Dropout
 from sklearn.utils import shuffle
 
+import polyps.file_manager as fm
 
 # %% Function definition
 
@@ -73,9 +74,11 @@ def create_data( folder, sameSize, maxsize):
     label = []
     print(str(len(os.listdir(folder))) + " classes found")
     for classe in os.listdir(folder):
-        print("loading classe : " + folder + "\\" + classe + "\\*.jpg\n")
-        data_current = load_pictures(
-            folder + "\\" + classe + "\\*.jpg", maxsize)
+        print(classe)
+        if( classe==".gitkeep"):
+            continue
+        print("loading classe : " + fm.make_path( folder, classe,"*.jpg") + "\n")
+        data_current = load_pictures( fm.make_path( folder, classe,"*.jpg"), maxsize)
         label_current = [count_classes for i in range(len(data_current))]
         data.append(data_current)
         label.append(label_current)
