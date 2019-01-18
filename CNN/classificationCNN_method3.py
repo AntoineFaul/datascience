@@ -2,6 +2,7 @@ import numpy as np
 
 import CNN.classificationCNN as classCNN
 import pickle
+import sys
 
 from keras.utils import to_categorical
 from keras.models import model_from_json
@@ -11,7 +12,7 @@ import polyps.file_manager as fm
 #%%
 
 #folder = "C:\\Users\\Mathieu\\Google Drive\\SDU\\DSC\\Project\\Data"
-folderTest = fm.make_path( "polyps", "cnn_dataAugmented", "Test")
+folderTest = fm.make_path( "polyps", "cnn_dataAugmented", "TestAugmented")
 folderTrain = fm.make_path( "polyps", "cnn_dataAugmented", "Train")
 folderModel = fm.make_path("CNN","modelSave")
 nameModel = "toDelete"
@@ -25,6 +26,8 @@ epochs = 50
 
 if __name__ == "__main__":
 
+    
+    print('Argument List:', str(sys.argv))
     
     # Importation trainning dataSet
     source_dataSet = classCNN.create_data( folderTrain, True, maxsize)
