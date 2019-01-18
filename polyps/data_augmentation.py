@@ -1,5 +1,8 @@
 from keras.preprocessing.image import ImageDataGenerator
-from polyps.file_manager import make_path, clean_folder_group
+try:
+    from polyps.file_manager import make_path, clean_folder_group
+except ImportError:
+    from file_manager import make_path, clean_folder_group
 from random  import choice
 import glob
 import os
