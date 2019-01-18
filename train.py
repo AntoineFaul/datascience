@@ -11,7 +11,7 @@ from PIL import Image
 from keras.optimizers import Adam
 import model
 import matplotlib.pyplot as plt
-
+import keras.backend as K
 
 
 def load_transform_pictures(folder):
@@ -63,7 +63,7 @@ def write_image(array, directory):
 
         for i in range(224):
             for j in range(224):
-                img.putpixel((i,j),image[i][j])
+                img.putpixel((i,j),image[j][i])
 
         name = '{0:04}'.format(index) + "_output.jpg"
         img.save(fm.make_path(directory,name))
@@ -115,7 +115,7 @@ if __name__ == "__main__":
     model.fit(x = im,y=mask,
                         validation_split = 0.2,
 #                        steps_per_epoch = 1048//batch_size,
-                        epochs = 10,
+                        epochs = 1,
                         batch_size=batch_size,
 #                        validation_steps = 128//batch_size,
                         callbacks =[earlystopper
