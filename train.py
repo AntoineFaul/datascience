@@ -1,12 +1,10 @@
 from keras.models import Model, load_model
 from keras.callbacks import EarlyStopping, ModelCheckpoint
-from polyps import data_transformation
-from polyps import file_manager as fm #import make_path, load_image
-from platform import system as getSystem
-import glob
-import numpy as np
-from PIL import Image
+from polyps import data_augmentation, data_transformation, file_manager as fm
 from keras.optimizers import Adam
+from PIL import Image
+import numpy as np
+import glob
 import random
 import model
 
@@ -67,6 +65,8 @@ def write_image(array, directory):
 
 
 if __name__ == "__main__":
+    data_augmentation.execute()
+
     batch_size = 50
     model = model.u_net() #what does the Adam optimizer do
 
@@ -77,15 +77,16 @@ if __name__ == "__main__":
     output = fm.make_path('polyps', 'output')
 
     mask = np.array(data_transformation.create_binary_masks()) 
-    #earlystopper = EarlyStopping(patience=20, verbose=1)
-    checkpointer = ModelCheckpoint('model-polyp.h5', verbose=1, save_best_only=True)
-    model.fit(x = im,y=mask,
-                        validation_split = 0.2,
-                        epochs = 1,
-                        batch_size=20,
-                        callbacks=[checkpointer]
-                        )
+    #earlystopper = EarlyStopping(patience = 20, verbose = 1)
+    checkpointer = ModelCheckpoint('model-polyp.h5', verbose = 1, save_best_only = True)
+    model.fit(x = im,
+                y = mask,
+                validation_split = 0.2,
+                epochs = 1,
+                batch_size = 20,
+                callbacks = [checkpointer]
+            )
     
-    lab_pred = model.predict(test, verbose=1)
+    lab_pred = model.predict(test, verbose = 1)
 
-    write_image(merge(lab_pred),output)
+    write_image(merge(lab_pred), output)

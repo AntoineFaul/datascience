@@ -25,3 +25,7 @@ def clean_folder(forlder):
     for filename in fileList:
         if (filename != '.gitkeep'):
             os.remove(forlder+PATH_SEP+filename)
+
+def clean_folder_group(folder_group, *sub_folders):
+    for folder in [make_path(folder_group, sub_folder) for sub_folder in sub_folders]:
+        clean_folder(folder)
