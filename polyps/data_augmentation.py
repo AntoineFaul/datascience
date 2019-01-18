@@ -5,7 +5,7 @@ import glob
 import os
 
 TEST_PERC = 0.2
-TARGET_SIZE = (224, 224)
+TARGET_SIZE = (256, 256)
 SEED = 1
 
 input_path = make_path('polyps', 'origin')

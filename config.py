@@ -1,7 +1,9 @@
+from keras.callbacks import EarlyStopping, ModelCheckpoint
+from platform import system as getSystem
 import keras.backend as K
 
 IMG_MAX_SIZE = 256
-BATCH_SIZE = 64
+BATCH_SIZE = 32
 
 
 def dice_coef(y_true, y_pred):
@@ -22,10 +24,17 @@ def jacard_coef_loss(y_true, y_pred):
 def dice_coef_loss(y_true, y_pred):
     return -dice_coef(y_true, y_pred)
 
+earlystopper = EarlyStopping(monitor = 'val_loss', #stop when validation loss decreases
+								min_delta = 0, #if val_loss < 0 it stops
+								patience = 10, #minimum amount of epochs
+								verbose = 1) # print a text
+
+checkpointer = ModelCheckpoint('model-polyp.h5', verbose = 1, save_best_only = True)
+
 
 config = {
 	'path_sep': '\\' if getSystem() == 'Windows' else '/',
-	'except_file': '.gitkeep',
+	'except_files': ['.gitkeep'],
 
 	'dtype': 'float32',
 
@@ -36,7 +45,7 @@ config = {
 	'image_size': (IMG_MAX_SIZE, IMG_MAX_SIZE),
 	'image_dimension': (IMG_MAX_SIZE, IMG_MAX_SIZE, 3),
 
-	'multiplier': 1
+	'multiplier': 1,
 	'class_data': 'data',
 	'class_label': 'label',
 	'seed': 1,
@@ -59,9 +68,22 @@ config = {
 		'black': (0, 0, 0)
 	},
 
-	'batchsize': BATCH_SIZE,
+	'batch_size': BATCH_SIZE,
 	'loss': 'categorical_crossentropy', #'dice_coef_loss', #'jacard_coef_loss',
 	'metrics': ['accuracy', dice_coef, jacard_coef],
-	'validation_step': None, #128//batch_size
-	'epochs': 1
+	'fit': {
+		'steps_per_epoch': None, #1048//batch_size,
+		'validation_steps': None, #128//batch_size,
+		'epochs': 1,
+		'shuffle': True,
+		'batch_size': None, #BATCH_SIZE,
+		'class_weight': None, #(1,1,1,1),
+		'callbacks': [earlystopper], #, checkpointer], # use checkpointer if you want to save the model
+	},
+	'class_weight': {
+		0: 1.,
+		1: 3.,
+		2: 1,
+		3: 1
+	}
 }
