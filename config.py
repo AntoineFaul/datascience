@@ -86,10 +86,5 @@ config = {
 		'class_weight': None, #(1,1,1,1),
 		'callbacks': [earlystopper], #, checkpointer], # use checkpointer if you want to save the model
 	},
-	'class_weight': {
-		0: 1.,
-		1: 3.,
-		2: 1,
-		3: 1
-	}
+	'class_weight': (1,1,1,1)
 }
