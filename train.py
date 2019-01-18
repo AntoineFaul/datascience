@@ -41,7 +41,6 @@ def merge(array):
     final_images = []
 
     for image in array:
-        print(image[0][0])
         cimage = []
 
         for row in image:
@@ -136,14 +135,15 @@ if __name__ == "__main__":
     mask_test = mask_test[:, :, :, 1:]
   
     history = model.fit(x = im, y = mask,
-                        validation_split = config['validation_split'],
+                        validation_data = (im, mask),
+                        #validation_split = config['validation_split'],
                         steps_per_epoch = config['fit']['steps_per_epoch'],
                         validation_steps = config['fit']['validation_steps'],
                         epochs = config['fit']['epochs'],
                         shuffle = config['fit']['shuffle'],
                         batch_size = config['fit']['batch_size'],
                         class_weight = config['fit']['class_weight'],
-                        callbacks = config['fit']['callbacks']  
+                        callbacks = config['fit']['callbacks']
                     )
 
     history = history.history
