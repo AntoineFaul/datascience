@@ -77,15 +77,15 @@ if __name__ == "__main__":
     output = fm.make_path('polyps', 'output')
 
     mask = np.array(data_transformation.create_binary_masks()) 
-    model.fit(x = im,
-                y = mask,
-                steps_per_epoch = 1048//batch_size,
-                validation_split = 0.2,
-                validation_steps = 128//batch_size,
-                epochs = 1
-            )
+    #earlystopper = EarlyStopping(patience=20, verbose=1)
+    checkpointer = ModelCheckpoint('model-polyp.h5', verbose=1, save_best_only=True)
+    model.fit(x = im,y=mask,
+                        validation_split = 0.2,
+                        epochs = 1,
+                        batch_size=20,
+                        callbacks=[checkpointer]
+                        )
     
-    model = load_model('model-polyp.h5')
     lab_pred = model.predict(test, verbose=1)
 
     write_image(merge(lab_pred),output)
