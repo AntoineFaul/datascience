@@ -93,7 +93,7 @@ def dice_coef_loss(y_true, y_pred):
     return -dice_coef(y_true, y_pred)
 
 if __name__ == "__main__":
-#    data_augmentation.execute()
+    data_augmentation.execute()
 
     batch_size = 64
     model = model.u_net(IMG_SIZE = (224,224,3)) #what does the Adam optimizer do
