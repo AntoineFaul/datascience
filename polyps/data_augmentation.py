@@ -81,3 +81,5 @@ def execute():
     # /!\ All of files inside the both subfolders of the Output folder will be delete before.
     dataWithLabel_Generator(picture_multiplier)
     extract_data_test()
+
+    print("Augmentation done.\n")
