@@ -1,5 +1,5 @@
 from keras.preprocessing.image import ImageDataGenerator
-import platform
+from platform import system as getSystem
 import os
 import glob
 
@@ -62,7 +62,7 @@ if __name__ == "__main__":
     # In the folder input, there is two subfolders, the first with pictures and the second with the masks.
     # Same for output folder
     
-    if platform.system() == 'Windows':
+    if getSystem() == 'Windows':
         folderInput = ".\\origin"
         folderOutput = ".\\input"
     else:
