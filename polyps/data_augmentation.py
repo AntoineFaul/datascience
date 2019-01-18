@@ -32,12 +32,13 @@ def generator_flow(image_path, newImage_path, batch_size, classData):
         )
 
 def dataWithLabel_Generator(multiplier, image_path, newImage_path, classData, classLabel):
-    clean_folder(make_path(newImage_path, classData))
+    for folder in [make_path(newImage_path, classData), make_path(newImage_path, classLabel)]:
+        clean_folder(folder)
 
     path1 = make_path(image_path, classData, "*.jpg")
     path2 = make_path(image_path, classLabel, "*.jpg")
     print("\nAugmentation of classe : " + make_path(image_path, classData))
-    print("Augmentation of classe : " + make_path(image_path, classLabel, "*.jpg"))
+    print("Augmentation of classe : " + make_path(image_path, classLabel))
 
     imageGenerator = generator_flow(image_path, newImage_path, len(glob.glob(path1)), classData)
     maskGenerator = generator_flow(image_path, newImage_path, len(glob.glob(path2)), classLabel)
@@ -55,7 +56,7 @@ if __name__ == "__main__":
     folderInput = make_path('origin')
     folderOutput = make_path('input')
 
-    picture_multiplier = 4 # Output number = ${picture_multiplier} * Input_number
+    picture_multiplier = 8 # Output number = ${picture_multiplier} * Input_number
     classData="data" # name of the subfolder containing the picures
     classLabel="label" # name of the subfolder containing the markers
     

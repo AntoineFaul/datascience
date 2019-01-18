@@ -21,6 +21,7 @@ def createMask(folderIn, folderOut, masks, masks_namesPrefixe = None):
     # Suppresion of the files inside the output folder
     clean_folder(folderOut)
     names = os.listdir(folderIn)
+    names.remove('.gitkeep')
 
     # Configuration of the output files prefixes
     if masks_namesPrefixe and len(masks) == len(masks_namesPrefixe):
