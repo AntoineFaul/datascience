@@ -1,7 +1,7 @@
 from keras.models import Model, load_model
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from polyps import data_transformation
-from file_manager import make_path, load_image
+from polyps import file_manager as fm #import make_path, load_image
 from platform import system as getSystem
 import glob
 import numpy as np
@@ -15,7 +15,7 @@ def load_transform_pictures(folder):
     x_train = []
 
     for filename in glob.glob(folder):
-        im = load_image(filename)
+        im = fm.load_image(filename)
         x_train.append(im)
 
     return(x_train)
@@ -72,9 +72,9 @@ if __name__ == "__main__":
 
     model.compile(optimizer = Adam(lr = 1e-4), loss = 'categorical_crossentropy' , metrics = ['accuracy'])#, pixel_accuracy])
 
-    im = np.array(load_transform_pictures(make_path('polyps', 'input', 'data', '*.jpg')))
-    test = np.array(load_transform_pictures(make_path('polyps', 'test', '*.jpg')))
-    output = make_path('polyps', 'output')
+    im = np.array(load_transform_pictures(fm.make_path('polyps', 'input', 'data', '*.jpg')))
+    test = np.array(load_transform_pictures(fm.make_path('polyps', 'test', '*.jpg')))
+    output = fm.make_path('polyps', 'output')
 
     mask = np.array(data_transformation.create_binary_masks()) 
     model.fit(x = im,

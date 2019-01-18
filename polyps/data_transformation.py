@@ -1,5 +1,5 @@
 from platform import system as getSystem
-from file_manager import make_path, load_image, clean_folder
+from polyps.file_manager import make_path, load_image, clean_folder
 import cv2 as cv
 from PIL import Image
 import numpy as np
