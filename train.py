@@ -19,14 +19,20 @@ def load_transform_pictures(folder):
     return(x_train)
 
 def pixel_class(c):
-    if c == 1:
+    '''if c == 1:
         return config['color']['rgb']['red']
     elif c == 2:
         return config['color']['rgb']['green']
     elif c == 3:
         return config['color']['rgb']['blue']
     else:
-        return config['color']['rgb']['black']
+        return config['color']['rgb']['black']'''
+    if c == 1:
+        return config['color']['rgb']['green']
+    elif c == 2:
+        return config['color']['rgb']['blue']
+    else:
+        return config['color']['rgb']['red']
         
 def find_class(c):
     return c.argmax()
@@ -35,6 +41,7 @@ def merge(array):
     final_images = []
 
     for image in array:
+        print(image[0][0])
         cimage = []
 
         for row in image:
@@ -54,12 +61,12 @@ def write_image(array, directory):
     img_store =[]
 
     for image in array:
-        index = index +1
-        img = Image.new('RGB', config['image_size'], "white")
+        index += 1
+        img = Image.new('RGB', config['image_size'], 'white')
 
         for i in range(config['image_max']):
             for j in range(config['image_max']):
-                img.putpixel((i,j),image[j][i])
+                img.putpixel((i,j), image[i][j])
 
         name = '{0:04}'.format(index) + '_output.jpg'
         img.save(fm.make_path(directory, name))
@@ -109,7 +116,7 @@ def jacard_coef_loss(y_true, y_pred):
 
 
 if __name__ == "__main__":
-    data_augmentation.execute()
+    #data_augmentation.execute()
 
     batch_size = config['batch_size']
     model = model.u_net(IMG_SIZE = config['image_dimension']) #what does the Adam optimizer do
@@ -121,8 +128,12 @@ if __name__ == "__main__":
     output = fm.make_path('polyps', 'output')
     path = fm.make_path('polyps', 'input', 'label')
     path_test = fm.make_path('polyps', 'test', 'label')
-    mask = np.array(data_transformation.create_binary_masks(path = path)) 
+    mask = np.array(data_transformation.create_binary_masks(path = path))
     mask_test = np.array(data_transformation.create_binary_masks(path = path_test))
+
+    #Remove 1 dimension (Black)
+    mask = mask[:, :, :, 1:]
+    mask_test = mask_test[:, :, :, 1:]
   
     history = model.fit(x = im, y = mask,
                         validation_split = config['validation_split'],
@@ -139,5 +150,5 @@ if __name__ == "__main__":
     lab_pred = model.predict(test, verbose = 1)
     evaluate = model.evaluate(x = test, y = mask_test, batch_size = batch_size)
     display_im = write_image(merge(lab_pred), output)
-    plt.imshow(display_im[0])#plots the first picture
+    plt.imshow(display_im[0]) #plots the first picture
     print("Evaluation : Loss: "+ str(evaluate[0]) + ", Accuracy: " + str(evaluate[1]) + ", Dice Coefficient: " + str(evaluate[2]) + ", Jacard Coefficient: " + str(evaluate[3]))

@@ -53,7 +53,8 @@ def u_net(num_classes = 3, IMG_SIZE = config['image_dimension']):
     c9 = Conv2D(neurons, (3, 3), activation='relu', padding='same') (u9)
     c9 = Conv2D(neurons, (3, 3), activation='relu', padding='same') (c9)
     
-    outputs = Conv2D(4, (1, 1), activation='softmax') (c9)  #each output row will sum up to 1
+    #outputs = Conv2D(4, (1, 1), activation='softmax') (c9)  #each output row will sum up to 1
+    outputs = Conv2D(3, (1, 1), activation='softmax') (c9)  #only 3 dimension (RGB, without black)
     model = Model(inputs=[inputs], outputs=[outputs])
 #    model.summary()
     return(model)

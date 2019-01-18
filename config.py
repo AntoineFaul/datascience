@@ -45,7 +45,7 @@ config = {
 	'image_size': (IMG_MAX_SIZE, IMG_MAX_SIZE),
 	'image_dimension': (IMG_MAX_SIZE, IMG_MAX_SIZE, 3),
 
-	'multiplier': 1,
+	'multiplier': 2,
 	'seed': 1,
 	'augmentation': {
 		'zoom_range': 0.0,
@@ -80,7 +80,7 @@ config = {
 	'fit': {
 		'steps_per_epoch': None, #1048//batch_size,
 		'validation_steps': None, #128//batch_size,
-		'epochs': 1,
+		'epochs': 100,
 		'shuffle': True,
 		'batch_size': None, #BATCH_SIZE,
 		'class_weight': None, #(1,1,1,1),
