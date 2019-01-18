@@ -62,7 +62,7 @@ def write_image(array, directory):
                 img.putpixel((i,j),image[i][j])
 
         name = '{0:04}'.format(index) + "_output.jpg"
-        img.save(directory+name)
+        img.save(fm.make_path(directory, name))
 
 
 if __name__ == "__main__":
