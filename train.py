@@ -8,6 +8,8 @@ import numpy as np
 from PIL import Image
 from keras.optimizers import Adam
 import model
+import matplotlib.pyplot as plt
+
 
 
 def load_transform_pictures(folder):
@@ -52,7 +54,7 @@ def merge(array):
 
 def write_image(array, directory):
     index = 0
-
+    img_store =[]
     for image in array:
         index = index +1
         img = Image.new("RGB", (224,224), "white")
@@ -63,12 +65,34 @@ def write_image(array, directory):
 
         name = '{0:04}'.format(index) + "_output.jpg"
         img.save(directory+name)
+        img_store.append(np.array(img))
+    return img_store
 
+def dice_coef(y_true, y_pred):
+    y_true_f = K.flatten(y_true)
+    y_pred_f = K.flatten(y_pred)
+    intersection = K.sum(y_true_f * y_pred_f)
+    return (2.0 * intersection + 1.0) / (K.sum(y_true_f) + K.sum(y_pred_f) + 1.0)
+
+
+def jacard_coef(y_true, y_pred):
+    y_true_f = K.flatten(y_true)
+    y_pred_f = K.flatten(y_pred)
+    intersection = K.sum(y_true_f * y_pred_f)
+    return (intersection + 1.0) / (K.sum(y_true_f) + K.sum(y_pred_f) - intersection + 1.0)
+
+
+def jacard_coef_loss(y_true, y_pred):
+    return -jacard_coef(y_true, y_pred)
+
+
+def dice_coef_loss(y_true, y_pred):
+    return -dice_coef(y_true, y_pred)
 
 if __name__ == "__main__":
-    batch_size = 50
+    batch_size = 128
     model = model.u_net(IMG_SIZE = (256,256,3)) #what does the Adam optimizer do
-
+    
     model.compile(optimizer = Adam(lr = 1e-4), loss = 'categorical_crossentropy' , metrics = ['accuracy'])#, pixel_accuracy])
 
     im = np.array(load_transform_pictures(fm.make_path('polyps', 'input', 'data', '*.jpg')))
@@ -78,15 +102,22 @@ if __name__ == "__main__":
     path_test = fm.make_path('polyps', 'test', 'label')
     mask = np.array(data_transformation.create_binary_masks(path=path)) 
     mask_test = np.array(data_transformation.create_binary_masks(path = path_test))
-    #earlystopper = EarlyStopping(patience=20, verbose=1)
 #    checkpointer = ModelCheckpoint('model-polyp.h5', verbose=1, save_best_only=True)
+    earlystopper = EarlyStopping(monitor='val_loss', #stop when validation loss decreases
+                                 min_delta=0, #if val_loss < 0 it stops
+                                 patience=10, #minimum amount of epochs
+                                 verbose=1) # print a text
     model.fit(x = im,y=mask,
                         validation_split = 0.2,
-                        epochs = 1,
-                        batch_size=20,
+                        epochs = 12,
+                        batch_size=batch_size,
 #                        callbacks=[checkpointer]
+                        callbacks =[earlystopper]
                         )
     
     lab_pred = model.predict(test, verbose=1)
-    evaluate = model.evaluate(x=test, y=mask_test)
-    write_image(merge(lab_pred),output)
+    evaluate = model.evaluate(x=test, y=mask_test,batch_size=batch_size)
+    display_im = write_image(merge(lab_pred),output)
+    plt.imshow(display_im[0])#plots the first picture
+    
+
