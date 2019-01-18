@@ -36,7 +36,7 @@ def createMask(folderIn, folderOut, masks, masks_namesPrefixe = None):
         
         for i in range(len(masks)):
             imOut = cv.inRange(picture, masks[i], masks[i])
-            cv.imwrite(make_path(folderOut, prefixes[i] + '_' + names[cpt], imOut)
+            cv.imwrite(make_path(folderOut, prefixes[i] + '_' + names[cpt]), imOut)
             store_im.append(imOut/255)
 
         print("Picture " + str(cpt))

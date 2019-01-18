@@ -22,6 +22,6 @@ def clean_folder(forlder):
 	# Suppresion of the files inside the output folder
     fileList = os.listdir(forlder)
 
-    for fileName in fileList:
-        if (filename != '.gitkeep')
-            os.remove(forlder+PATH_SEP+fileName)
+    for filename in fileList:
+        if (filename != '.gitkeep'):
+            os.remove(forlder+PATH_SEP+filename)

@@ -27,16 +27,12 @@ def generator_flow(image_path, newImage_path, batch_size, classData):
             target_size = TARGET_SIZE,
             class_mode = None,
             save_format = 'jpg',
-            save_to_dir = newImage_path + '\\' + classData,
+            save_to_dir = make_path(newImage_path , classData),
             seed = SEED
         )
 
 def dataWithLabel_Generator(multiplier, image_path, newImage_path, classData, classLabel):
-    clean_folder(newImage_path+PATH_SEP+classData)
-    fileList = os.listdir(newImage_path+"\\"+classLabel)
-
-    for fileName in fileList:
-        os.remove(newImage_path+"\\"+classLabel+"\\"+fileName)
+    clean_folder(make_path(newImage_path, classData))
 
     path1 = make_path(image_path, classData, "*.jpg")
     path2 = make_path(image_path, classLabel, "*.jpg")
