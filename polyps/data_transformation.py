@@ -61,7 +61,6 @@ def create_binary_masks():
     # be the index of the mask in the Array masks
     # /!\ All of files of the Output folder will be delete before.
     plop = createMask(folderIn = fileIn, folderOut = fileOut, masks = masks)
-    print(plop)
     chunks = [np.swapaxes(np.array(plop[x:x+4]), 0, 2) for x in range(0, len(plop), 4)]  
     
     print("END\n")
