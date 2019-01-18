@@ -1,16 +1,18 @@
 import numpy as np
 
-import classificationCNN as classCNN
+import CNN.classificationCNN as classCNN
 import pickle
 
 from keras.utils import to_categorical
 from keras.models import model_from_json
 
+import polyps.file_manager as fm
+
 #%%
 
 #folder = "C:\\Users\\Mathieu\\Google Drive\\SDU\\DSC\\Project\\Data"
-folderTest = "C:\\Users\\Mathieu\\Google Drive\\SDU\\DSC\\Project\\DataAugmented_testSeparated\\Test"
-folderTrain = "C:\\Users\\Mathieu\\Google Drive\\SDU\\DSC\\Project\\DataAugmented_testSeparated\\Train"
+folderTest = fm.make_path( "polyps", "cnn_dataAugmented", "Test")
+folderTrain = fm.make_path( "polyps", "cnn_dataAugmented", "Train")
 maxsize = (64, 64)
 perCent_Test = 0.8
 perCent_Validation = 0.8
@@ -78,7 +80,7 @@ if __name__ == "__main__":
                   loss='categorical_crossentropy', metrics=['accuracy'])
     model1.summary()
     
-    #%%
+#%% fit the program 
 
     history1 = model1.fit(train_data, train_labels_one_hot,
                         batch_size=batch_size, epochs=epochs,
@@ -98,12 +100,12 @@ if __name__ == "__main__":
     
     # serialize model to JSON
     model_json = model1.to_json()
-    with open("model.json", "w") as json_file:
+    with open("modelPlop.json", "w") as json_file:
         json_file.write(model_json)
     
     # serialize weights to HDF5
-    model1.save_weights("model.h5")
+    model1.save_weights("modelPlop.h5")
     print("Saved model to disk")
     
-    with open('history.pkl', 'wb') as output:  # Overwrites any existing file.
+    with open('historyPlop.pkl', 'wb') as output:  # Overwrites any existing file.
         pickle.dump(history1, output, pickle.HIGHEST_PROTOCOL)

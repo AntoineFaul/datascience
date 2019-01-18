@@ -6,12 +6,8 @@ from PIL import Image
 from keras import backend as K #use tensors
 import numpy as np
 import glob
-import numpy as np
-from PIL import Image
-from keras.optimizers import Adam
 import model
 import matplotlib.pyplot as plt
-import keras.backend as K
 
 
 def load_transform_pictures(folder):
