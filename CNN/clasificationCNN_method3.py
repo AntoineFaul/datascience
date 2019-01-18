@@ -1,8 +1,10 @@
 import numpy as np
 
 import classificationCNN as classCNN
+import pickle
 
 from keras.utils import to_categorical
+from keras.models import model_from_json
 
 #%%
 
@@ -51,8 +53,8 @@ if __name__ == "__main__":
     test_data = test_data.astype('float32')
 
     # Scale the data to lie between 0 to 1
-    train_data = train_data * 100 / 255
-    validation_data = validation_data * 100 / 255
+    train_data /= 255
+    validation_data /= 255
     test_data /= 255
 
     # Change the labels from integer to categorical data
@@ -91,3 +93,17 @@ if __name__ == "__main__":
        
     (predict1, predict1_class, predict1_succes, predict1_fails) = classCNN.plot_performances( model1, history1, test_data, test_dataSet[1])
     classCNN.plot_history( history1)
+    
+#%%
+    
+    # serialize model to JSON
+    model_json = model1.to_json()
+    with open("model.json", "w") as json_file:
+        json_file.write(model_json)
+    
+    # serialize weights to HDF5
+    model1.save_weights("model.h5")
+    print("Saved model to disk")
+    
+    with open('history.pkl', 'wb') as output:  # Overwrites any existing file.
+        pickle.dump(history1, output, pickle.HIGHEST_PROTOCOL)
