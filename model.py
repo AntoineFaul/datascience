@@ -3,11 +3,12 @@ from keras.layers.pooling import MaxPooling2D
 from keras.layers.merge import concatenate
 from keras.models import Model, load_model
 from keras.layers import Input, BatchNormalization, Dropout, Lambda
+from config import config
 
 
-def u_net(num_classes=3,IMG_SIZE = (224,224,3)):
+def u_net(num_classes = 3, IMG_SIZE = config['image_dimension']):
     # Build U-Net model
-    inputs = Input(IMG_SIZE) 
+    inputs = Input(IMG_SIZE)
     s = BatchNormalization()(inputs) #Ioffe and Szegedy, 2015
     s = Dropout(0.5)(s)
     neurons = 32 #original 64

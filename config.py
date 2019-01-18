@@ -46,26 +46,32 @@ config = {
 	'image_dimension': (IMG_MAX_SIZE, IMG_MAX_SIZE, 3),
 
 	'multiplier': 1,
-	'class_data': 'data',
-	'class_label': 'label',
 	'seed': 1,
 	'augmentation': {
+		'zoom_range': 0.0,
+		'height_shift_range': 0.0,
+		'width_shift_range': 0.0,
+		'rotation_range': 0, #90,
 		'brightness_range': (0.75,1.25),
 		'flip': {
 			'horizontal': True,
 			'vertical': True
-		},
-		'rotation_range': 0, #90,
-		'height_shift_range': 0.0,
-		'width_shift_range': 0.0,
-		'zoom_range': 0.0
+		}
 	},
 
 	'color': {
-		'red': (255, 0, 0),
-		'green': (0, 255, 0),
-		'blue': (0, 0, 255),
-		'black': (0, 0, 0)
+		'rgb': {
+			'red': (255, 0, 0),
+			'green': (0, 255, 0),
+			'blue': (0, 0, 255),
+			'black': (0, 0, 0)
+		},
+		'binary': {
+			'red': [1, 0, 0],
+			'green': [0, 1, 0],
+			'blue': [0, 0, 1],
+			'black': [0, 0, 0]
+		}
 	},
 
 	'batch_size': BATCH_SIZE,

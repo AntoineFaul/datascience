@@ -20,13 +20,13 @@ def load_transform_pictures(folder):
 
 def pixel_class(c):
     if c == 1:
-        return config['color']['red']
+        return config['color']['rgb']['red']
     elif c == 2:
-        return config['color']['green']
+        return config['color']['rgb']['green']
     elif c == 3:
-        return config['color']['blue']
+        return config['color']['rgb']['blue']
     else:
-        return config['color']['black']
+        return config['color']['rgb']['black']
         
 def find_class(c):
     return c.argmax()

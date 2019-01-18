@@ -1,16 +1,13 @@
 from keras.preprocessing.image import ImageDataGenerator
-from polyps.file_manager import make_path, clean_folder_group
+from polyps.file_manager import make_path, clean_folder_group, remove_except_files
 from random  import choice
 import glob
 import os
+from config import config
 
-TEST_PERC = 0.2
-TARGET_SIZE = (256, 256)
-SEED = 1
-
-input_path = make_path('polyps', 'origin')
-output_path = make_path('polyps', 'input')
-test_path = make_path('polyps', 'test')
+INPUT_PATH = make_path('polyps', 'origin')
+OUTPUT_PATH = make_path('polyps', 'input')
+TEST_PATH = make_path('polyps', 'test')
 
 CLASS_DATA = 'data'
 CLASS_LABEL = 'label'
@@ -18,13 +15,13 @@ CLASS_LABEL = 'label'
 
 def createGenerator():
     return  ImageDataGenerator(
-            #zoom_range= (0.8,1), # Range for random zoom (<1 : zoom in)
-            #width_shift_range=0.01, 
-            #height_shift_range=0.01, # shift by fraction of total height
-            #rotation_range = 45,  # Degree range for random rotations
-            brightness_range = (0.75,1.25),
-            horizontal_flip = True,  # randomly flip images
-            vertical_flip = True  # randomly flip images
+            zoom_range = config['augmentation']['zoom_range'], # range for random zoom (<1 : zoom in)
+            width_shift_range = config['augmentation']['width_shift_range'], # shift by fraction of total width
+            height_shift_range = config['augmentation']['height_shift_range'], # shift by fraction of total height
+            rotation_range = config['augmentation']['rotation_range'], # degree range for random rotations
+            brightness_range = config['augmentation']['brightness_range'],
+            horizontal_flip = config['augmentation']['flip']['horizontal'], # randomly flip images
+            vertical_flip = config['augmentation']['flip']['vertical']  # randomly flip images
         )
 
 def generator_flow(image_path, batch_size, class_type):
@@ -32,54 +29,50 @@ def generator_flow(image_path, batch_size, class_type):
             image_path,
             batch_size = batch_size,
             classes = [class_type],
-            target_size = TARGET_SIZE,
+            target_size = config['image_size'],
             class_mode = None,
             save_format = 'jpg',
-            save_to_dir = make_path(output_path , class_type),
-            seed = SEED
+            save_to_dir = make_path(OUTPUT_PATH , class_type),
+            seed = config['seed']
         )
 
-def dataWithLabel_Generator(multiplier):
-    clean_folder_group(output_path, CLASS_DATA, CLASS_LABEL)
+def dataWithLabel_Generator():
+    clean_folder_group(OUTPUT_PATH, CLASS_DATA, CLASS_LABEL)
 
-    path1 = make_path(input_path, CLASS_DATA, "*.jpg")
-    path2 = make_path(input_path, CLASS_LABEL, "*.jpg")
-    print("\nAugmentation of classe : " + make_path(input_path, CLASS_DATA))
-    print("Augmentation of classe : " + make_path(input_path, CLASS_LABEL))
+    path1 = make_path(INPUT_PATH, CLASS_DATA, "*.jpg")
+    path2 = make_path(INPUT_PATH, CLASS_LABEL, "*.jpg")
+    print("\nAugmentation of classe : " + make_path(INPUT_PATH, CLASS_DATA))
+    print("Augmentation of classe : " + make_path(INPUT_PATH, CLASS_LABEL))
 
-    imageGenerator = generator_flow(input_path, len(glob.glob(path1)), CLASS_DATA)
-    maskGenerator = generator_flow(input_path, len(glob.glob(path2)), CLASS_LABEL)
+    imageGenerator = generator_flow(INPUT_PATH, len(glob.glob(path1)), CLASS_DATA)
+    maskGenerator = generator_flow(INPUT_PATH, len(glob.glob(path2)), CLASS_LABEL)
     
     trainGenerator = zip(imageGenerator, maskGenerator)
         
-    for i,batch in enumerate(trainGenerator):
-        if (i >= multiplier-1):
+    for i, batch in enumerate(trainGenerator):
+        if (i >= config['multiplier']-1):
             break
 
 def extract_data_test():
-    clean_folder_group(test_path, CLASS_DATA, CLASS_LABEL)
-    images = os.listdir(make_path(output_path, CLASS_DATA))
+    clean_folder_group(TEST_PATH, CLASS_DATA, CLASS_LABEL)
+    images = os.listdir(make_path(OUTPUT_PATH, CLASS_DATA))
+    remove_except_files(images)
+    
     im_list = []
 
-    images.remove('.gitkeep')
-
-    for i in range(int(len(images)*TEST_PERC)):
+    for i in range(int(len(images)*config['test_split'])):
         im = choice(images)
         im_list.append(im)
         images.remove(im)
 
     for filename in im_list:
-        os.rename(make_path(output_path, CLASS_DATA, filename), make_path(test_path, CLASS_DATA, filename))
-        os.rename(make_path(output_path, CLASS_LABEL, filename), make_path(test_path, CLASS_LABEL, filename))
+        os.rename(make_path(OUTPUT_PATH, CLASS_DATA, filename), make_path(TEST_PATH, CLASS_DATA, filename))
+        os.rename(make_path(OUTPUT_PATH, CLASS_LABEL, filename), make_path(TEST_PATH, CLASS_LABEL, filename))
 
 def execute():
-    picture_multiplier = 1 # Output number = ${picture_multiplier} * Input_number
-    classData = 'data' # name of the subfolder containing the picures
-    classLabel = 'label' # name of the subfolder containing the markers
-    
     # This function will generate the pictures/marker
     # /!\ All of files inside the both subfolders of the Output folder will be delete before.
-    dataWithLabel_Generator(picture_multiplier)
+    dataWithLabel_Generator()
     extract_data_test()
 
     print("Augmentation done.\n")

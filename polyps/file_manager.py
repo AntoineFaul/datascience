@@ -27,3 +27,8 @@ def clean_folder(forlder):
 def clean_folder_group(folder_group, *sub_folders):
     for folder in [make_path(folder_group, sub_folder) for sub_folder in sub_folders]:
         clean_folder(folder)
+
+def remove_except_files(files):
+    for file in files:
+        if (file in config['except_files']):
+            files.remove(file)
