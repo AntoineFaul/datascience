@@ -114,11 +114,12 @@ def shuffle_fairSplit_data(data, label, perCent_Test):
     y_train = np.empty( shape=(maxIndex), dtype=np.uint8)
     y_test = np.empty( shape=(len(data)-maxIndex), dtype=np.uint8)
     
-    (x, y) = shuffle(data, label)
     cptClean = 0
     cptDirty = 0
     cptTrain = 0
     cptTest = 0
+    
+    (data, label) = shuffle(data, label)
     
     for i in range(len(data)):
         if( label[i]==0): # Clean
@@ -141,7 +142,7 @@ def shuffle_fairSplit_data(data, label, perCent_Test):
                 y_test[cptTest] = 1
                 cptTest += 1
             cptDirty += 1
-                   
+           
     return (x_train,y_train), (x_test, y_test)
 
 def plot_data(train_dataSet, test_dataSet):
