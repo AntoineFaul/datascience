@@ -79,7 +79,29 @@ def jacard_coef(y_true, y_pred): # between 0 and 1
     intersection = K.sum(y_true_f * y_pred_f)
     return (intersection + 1.0) / (K.sum(y_true_f) + K.sum(y_pred_f) - intersection + 1.0)
 
-
+#def weighted_categorical_crossentropy(weights):
+#    """ weighted_categorical_crossentropy
+#
+#        Args:
+#            * weights<ktensor|nparray|list>: crossentropy weights
+#        Returns:
+#            * weighted categorical crossentropy function
+#    """
+#    if isinstance(weights,list) or isinstance(np.ndarray):
+#        weights=K.variable(weights)
+#
+#    def loss(target,output,from_logits=False):
+#        if not from_logits:
+#            output /= tf.reduce_sum(output,
+#                                    len(output.get_shape()) - 1,
+#                                    True)
+#            _epsilon = tf.convert_to_tensor(K.epsilon(), dtype=output.dtype.base_dtype)
+#            output = tf.clip_by_value(output, _epsilon, 1. - _epsilon)
+#            weighted_losses = target * tf.log(output) * weights
+#            return - tf.reduce_sum(weighted_losses,len(output.get_shape()) - 1)
+#        else:
+#            raise ValueError('WeightedCategoricalCrossentropy: not valid with logits')
+#    return loss
 
 def jacard_coef_loss(y_true, y_pred):
     return -jacard_coef(y_true, y_pred)
@@ -108,13 +130,12 @@ if __name__ == "__main__":
                                  min_delta=0, #if val_loss < 0 it stops
                                  patience=10, #minimum amount of epochs
                                  verbose=1) # print a text
-     
     
-    my_class_weight = {0: 1., 1: 3.,2:1,3:1}
+    my_class_weight = (1,1,1,1)
     history= model.fit(x = im,y=mask,
                         validation_split = 0.2,
 #                        steps_per_epoch = 1048//batch_size,
-#                        class_weight = (1,1,1,1),
+                        class_weight = my_class_weight,
                         epochs = 1,
                         shuffle = True,
 #                        batch_size=batch_size,
