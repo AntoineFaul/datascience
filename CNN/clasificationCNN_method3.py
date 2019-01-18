@@ -21,18 +21,18 @@ if __name__ == "__main__":
 
     
     # Importation trainning dataSet
-    train_dataSet = classCNN.create_data( folderTrain, True, maxsize)
-    print("importation of " + str(len(train_dataSet[0])) + " pictures as training data")
+    source_dataSet = classCNN.create_data( folderTrain, True, maxsize)
+    print("importation of " + str(len(source_dataSet[0])) + " pictures as training data")
 
     # Importation testing dataSet
     test_dataSet = classCNN.create_data( folderTest, True, maxsize)
     print("importation of " + str(len(test_dataSet[0])) + " pictures as test data")    
     
     # Creation of the validation dataSet
-    (train_dataSet, validation_dataSet) = classCNN.shuffle_split_data(data=train_dataSet[0], label=train_dataSet[1], perCent_Test=perCent_Validation)
+    (train_dataSet, validation_dataSet) = classCNN.shuffle_fairSplit_data(data=source_dataSet[0], label=source_dataSet[1], perCent_Test=perCent_Validation)
     print("Split the trainning data set")
-    print("Train dataSet (" + str(len(train_dataSet[1])) + " pictures) : " + str(len(train_dataSet[1][[i==0 for i in train_dataSet[1]]])) + " Clean")
-    print("Validation dataSet (" + str(len(validation_dataSet[1])) + " pictures) : " + str(len(validation_dataSet[1][[i==0 for i in validation_dataSet[1]]])) + " Clean")
+    print("Train dataSet (" + str(len(train_dataSet[1])) + " pictures) : " + str(len([train_dataSet[1][i] for i in range(len(train_dataSet[1])) if train_dataSet[1][i]==0])) + " Clean")
+    print("Validation dataSet (" + str(len(validation_dataSet[1])) + " pictures) : " + str(len([validation_dataSet[1][i] for i in range(len(validation_dataSet[1])) if validation_dataSet[1][i]==0])) + " Clean")
 
 #%% preprocessing
 
@@ -51,8 +51,8 @@ if __name__ == "__main__":
     test_data = test_data.astype('float32')
 
     # Scale the data to lie between 0 to 1
-    train_data /= 255
-    validation_data /= 255
+    train_data = train_data * 100 / 255
+    validation_data = validation_data * 100 / 255
     test_data /= 255
 
     # Change the labels from integer to categorical data
@@ -91,6 +91,3 @@ if __name__ == "__main__":
        
     (predict1, predict1_class, predict1_succes, predict1_fails) = classCNN.plot_performances( model1, history1, test_data, test_dataSet[1])
     classCNN.plot_history( history1)
-        
-
-    

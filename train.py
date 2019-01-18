@@ -64,7 +64,7 @@ def write_image(array, directory):
                 img.putpixel((i,j),image[i][j])
 
         name = '{0:04}'.format(index) + "_output.jpg"
-        img.save(directory+name)
+        img.save(fm.make_path(directory,name))
         img_store.append(np.array(img))
     return img_store
 
@@ -82,6 +82,7 @@ def jacard_coef(y_true, y_pred):
     return (intersection + 1.0) / (K.sum(y_true_f) + K.sum(y_pred_f) - intersection + 1.0)
 
 
+
 def jacard_coef_loss(y_true, y_pred):
     return -jacard_coef(y_true, y_pred)
 
@@ -90,9 +91,10 @@ def dice_coef_loss(y_true, y_pred):
     return -dice_coef(y_true, y_pred)
 
 if __name__ == "__main__":
-    batch_size = 128
-    model = model.u_net(IMG_SIZE = (256,256,3)) #what does the Adam optimizer do
-    
+
+    batch_size = 50
+    model = model.u_net(IMG_SIZE = (224,224,3)) #what does the Adam optimizer do
+
     model.compile(optimizer = Adam(lr = 1e-4), loss = 'categorical_crossentropy' , metrics = ['accuracy'])#, pixel_accuracy])
 
     im = np.array(load_transform_pictures(fm.make_path('polyps', 'input', 'data', '*.jpg')))
@@ -119,5 +121,6 @@ if __name__ == "__main__":
     evaluate = model.evaluate(x=test, y=mask_test,batch_size=batch_size)
     display_im = write_image(merge(lab_pred),output)
     plt.imshow(display_im[0])#plots the first picture
+    print("Evaluation : {}".format(evaluate))
     
 
