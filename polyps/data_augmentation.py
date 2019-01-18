@@ -1,11 +1,19 @@
 from keras.preprocessing.image import ImageDataGenerator
-from file_manager import make_path, clean_folder
-import os
+from polyps.file_manager import make_path, clean_folder_group
+from random  import choice
 import glob
-import platform
+import os
 
+TEST_PERC = 0.2
 TARGET_SIZE = (224, 224)
 SEED = 1
+
+input_path = make_path('polyps', 'origin')
+output_path = make_path('polyps', 'input')
+test_path = make_path('polyps', 'test')
+
+CLASS_DATA = 'data'
+CLASS_LABEL = 'label'
 
 
 def createGenerator():
@@ -15,51 +23,61 @@ def createGenerator():
             #height_shift_range=0.01, # shift by fraction of total height
             #rotation_range = 45,  # Degree range for random rotations
             brightness_range = (0.75,1.25),
-            horizontal_flip=True,  # randomly flip images
-            vertical_flip=True  # randomly flip images
+            horizontal_flip = True,  # randomly flip images
+            vertical_flip = True  # randomly flip images
         )
 
-def generator_flow(image_path, newImage_path, batch_size, classData):
+def generator_flow(image_path, batch_size, class_type):
     return createGenerator().flow_from_directory(
             image_path,
             batch_size = batch_size,
-            classes = [classData],
+            classes = [class_type],
             target_size = TARGET_SIZE,
             class_mode = None,
             save_format = 'jpg',
-            save_to_dir = make_path(newImage_path , classData),
+            save_to_dir = make_path(output_path , class_type),
             seed = SEED
         )
 
-def dataWithLabel_Generator(multiplier, image_path, newImage_path, classData, classLabel):
-    for folder in [make_path(newImage_path, classData), make_path(newImage_path, classLabel)]:
-        clean_folder(folder)
+def dataWithLabel_Generator(multiplier):
+    clean_folder_group(output_path, CLASS_DATA, CLASS_LABEL)
 
-    path1 = make_path(image_path, classData, "*.jpg")
-    path2 = make_path(image_path, classLabel, "*.jpg")
-    print("\nAugmentation of classe : " + make_path(image_path, classData))
-    print("Augmentation of classe : " + make_path(image_path, classLabel))
+    path1 = make_path(input_path, CLASS_DATA, "*.jpg")
+    path2 = make_path(input_path, CLASS_LABEL, "*.jpg")
+    print("\nAugmentation of classe : " + make_path(input_path, CLASS_DATA))
+    print("Augmentation of classe : " + make_path(input_path, CLASS_LABEL))
 
-    imageGenerator = generator_flow(image_path, newImage_path, len(glob.glob(path1)), classData)
-    maskGenerator = generator_flow(image_path, newImage_path, len(glob.glob(path2)), classLabel)
+    imageGenerator = generator_flow(input_path, len(glob.glob(path1)), CLASS_DATA)
+    maskGenerator = generator_flow(input_path, len(glob.glob(path2)), CLASS_LABEL)
     
     trainGenerator = zip(imageGenerator, maskGenerator)
         
     for i,batch in enumerate(trainGenerator):
-        if(i >= multiplier-1):
+        if (i >= multiplier-1):
             break
 
-    
-if __name__ == "__main__":
-    # In the folder input, there is two subfolders, the first with pictures and the second with the masks.
-    # Same for output folder
-    folderInput = make_path('origin')
-    folderOutput = make_path('input')
+def extract_data_test():
+    clean_folder_group(test_path, CLASS_DATA, CLASS_LABEL)
+    images = os.listdir(make_path(output_path, CLASS_DATA))
+    im_list = []
 
-    picture_multiplier = 8 # Output number = ${picture_multiplier} * Input_number
-    classData="data" # name of the subfolder containing the picures
-    classLabel="label" # name of the subfolder containing the markers
+    images.remove('.gitkeep')
+
+    for i in range(int(len(images)*TEST_PERC)):
+        im = choice(images)
+        im_list.append(im)
+        images.remove(im)
+
+    for filename in im_list:
+        os.rename(make_path(output_path, CLASS_DATA, filename), make_path(test_path, CLASS_DATA, filename))
+        os.rename(make_path(output_path, CLASS_LABEL, filename), make_path(test_path, CLASS_LABEL, filename))
+
+def execute():
+    picture_multiplier = 1 # Output number = ${picture_multiplier} * Input_number
+    classData = 'data' # name of the subfolder containing the picures
+    classLabel = 'label' # name of the subfolder containing the markers
     
     # This function will generate the pictures/marker
     # /!\ All of files inside the both subfolders of the Output folder will be delete before.
-    dataWithLabel_Generator(multiplier = picture_multiplier, image_path = folderInput, newImage_path = folderOutput, classData = classData, classLabel = classLabel)
+    dataWithLabel_Generator(picture_multiplier)
+    extract_data_test()
