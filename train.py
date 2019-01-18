@@ -114,7 +114,6 @@ if __name__ == "__main__":
                                  verbose=1) # print a text
     model.fit(x = im,y=mask,
                         validation_split = 0.2,
-#                        steps_per_epoch = 1048//batch_size,
                         epochs = 1,
                         batch_size=batch_size,
 #                        validation_steps = 128//batch_size,
