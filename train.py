@@ -77,7 +77,7 @@ def dice_coef(y_true, y_pred):
     return (2.0 * intersection + 1.0) / (K.sum(y_true_f) + K.sum(y_pred_f) + 1.0)
 
 
-def jacard_coef(y_true, y_pred):
+def jacard_coef(y_true, y_pred): # between 0 and 1
     y_true_f = K.flatten(y_true)
     y_pred_f = K.flatten(y_pred)
     intersection = K.sum(y_true_f * y_pred_f)
@@ -93,9 +93,9 @@ def dice_coef_loss(y_true, y_pred):
     return -dice_coef(y_true, y_pred)
 
 if __name__ == "__main__":
-    data_augmentation.execute()
+#    data_augmentation.execute()
 
-    batch_size = 64
+    batch_size = 32
     model = model.u_net(IMG_SIZE = (224,224,3)) #what does the Adam optimizer do
 
     model.compile(optimizer = Adam(lr = 1e-4), loss = 'categorical_crossentropy' , metrics = ['accuracy',dice_coef,jacard_coef])# old learning rate 1e-4, pixel_accuracy])
@@ -112,17 +112,22 @@ if __name__ == "__main__":
                                  min_delta=0, #if val_loss < 0 it stops
                                  patience=10, #minimum amount of epochs
                                  verbose=1) # print a text
-    model.fit(x = im,y=mask,
+     
+    
+    my_class_weight = {0: 1., 1: 3.,2:1,3:1}
+    history= model.fit(x = im,y=mask,
                         validation_split = 0.2,
 #                        steps_per_epoch = 1048//batch_size,
+#                        class_weight = (1,1,1,1),
                         epochs = 1,
-                        batch_size=batch_size,
+                        shuffle = True,
+#                        batch_size=batch_size,
 #                        validation_steps = 128//batch_size,
                         callbacks =[earlystopper
 #                                    ,checkpointer #if you want to save the model
                                    ]     
                         )
-    
+    history = history.history
     lab_pred = model.predict(test, verbose=1)
     evaluate = model.evaluate(x=test, y=mask_test,batch_size=batch_size)
     display_im = write_image(merge(lab_pred),output)
