@@ -68,9 +68,9 @@ if __name__ == '__main__':
     
     lab_pred = model.predict(im[:1])
 
-    print("\nJaccard Coefficient for result: " + str(round(result_jaccard_coeff(mask[0], lab_pred[0])*100, 2)) + "%")
-    #evaluate = model.evaluate(x = im_test, y = mask_test, batch_size = batch_size)
-    #print("\nEvaluation : Loss: "+ str(round(evaluate[0], 4)) + ", Accuracy: " + str(round(evaluate[1], 4)) + ", Dice Coefficient: " + str(round(evaluate[2], 4)) + ", Jacard Coefficient: " + str(round(evaluate[3], 4)))
+    #print("\nJaccard Coefficient for result: " + str(round(result_jaccard_coeff(mask[0], lab_pred[0])*100, 2)) + "%")
+    evaluate = model.evaluate(x = im_test, y = mask_test, batch_size = batch_size)
+    print("\nEvaluation : Loss: "+ str(round(evaluate[0], 4)) + ", Accuracy: " + str(round(evaluate[1], 4)) + ", Dice Coefficient: " + str(round(evaluate[2], 4)) + ", Jacard Coefficient: " + str(round(evaluate[3], 4)))
 
     plt.imshow(lab_pred[0])
     plt.show()
