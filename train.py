@@ -126,4 +126,5 @@ if __name__ == "__main__":
     evaluate = model.evaluate(x = test, y = mask_test, batch_size = batch_size)
     display_im = write_image(merge(lab_pred), output, test_name)
     plt.imshow(display_im[0])#plots the first picture
+    plt.show()
     print("Evaluation : Loss: "+ str(evaluate[0]) + ", Accuracy: " + str(evaluate[1]) + ", Dice Coefficient: " + str(evaluate[2]) + ", Jacard Coefficient: " + str(evaluate[3]))
