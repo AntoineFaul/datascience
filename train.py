@@ -60,7 +60,7 @@ def write_image(array, directory):
 
         for i in range(config['image_max']):
             for j in range(config['image_max']):
-                img.putpixel((i,j),image[i][j])
+                img.putpixel((i,j),image[j][i])
 
         name = '{0:04}'.format(index) + '_output.jpg'
         img.save(fm.make_path(directory, name))
