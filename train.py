@@ -57,7 +57,7 @@ def merge(array):
     return(final_images)
 
 def write_image(array, directory, file_name):
-    fm.clean_folder(fm.make_path('polyps', 'output'))
+    fm.clean_folder(fm.make_path('polyps', 'output','data'))
     index = 0
     img_store = []
 
