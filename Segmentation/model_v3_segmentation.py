@@ -1,4 +1,4 @@
-
+import u_net_segmentation as us
 from keras.models import Model
 from keras.layers import Input, Conv2D, MaxPooling2D, UpSampling2D
 from keras.layers.normalization import BatchNormalization
@@ -38,7 +38,7 @@ def dice_coef_loss(y_true, y_pred):
     return -dice_coef(y_true, y_pred)
 
 
-def double_conv_layer(x, size, dropout=0.0, batch_norm=True):
+def double_conv_layer(x, size, dropout=0.1, batch_norm=True):
     if K.image_dim_ordering() == 'th':
         axis = 1
     else:
@@ -104,21 +104,20 @@ def load_transform_pictures(folder):
     for filename in glob.glob(folder):
         im=Image.open(filename)
         im.thumbnail(maxsize)
-        im = im /255
         im = np.array(im)
+        im = im /255        
         x_train.append(im)
     return(x_train)
     
 if __name__ == '__main__':
-    batch_size = 64
-    model = u_net() #what does the Adam optimizer do
+    batch_size = 128
+#    model = u_net() #what does the Adam optimizer do
+    model = us.u_net_segmentation()
     model.compile(optimizer = Adam(lr = 1e-4), loss =  dice_coef_loss , metrics = ['accuracy'])# [dice_coef, 'binary_accuracy', 'mse'])dice_coef_loss
     im = np.array(load_transform_pictures('C:\\Users\\MaxSchemmer\\Documents\\git\\datascience_v3\\polyps\\input\\data\\*.jpg'))
     mask = np.array(load_transform_pictures('C:\\Users\\MaxSchemmer\\Documents\\git\\datascience_v3\\polyps\\input\\label\\*.jpg'))
     model.fit(x = im,y=mask,
-                        steps_per_epoch = 1048//batch_size,#1048//batch_size,
-                        validation_split = 0.2,
-                        validation_steps = 128//batch_size,
+                        batch_size = batch_size,
                         epochs = 1, 
             
                         )
