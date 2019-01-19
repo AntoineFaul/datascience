@@ -32,14 +32,15 @@ def dice_coef_loss(y_true, y_pred, smooth = 100.0):
     return (1 - dice_coef(y_true, y_pred)) * smooth
 
 def load_transform_pictures(folder):
-    maxsize = (224,224)
+    maxsize = (224, 224)
     x_train=[]
+
     for filename in glob.glob(folder):
         im=Image.open(filename)
         im.thumbnail(maxsize)
         im = np.array(im)
-        im = im / 255
-        x_train.append(im)
+        x_train.append(im/255)
+
     return(x_train)
 
 def result_jaccard_coeff(img1, img2):
@@ -52,18 +53,24 @@ if __name__ == '__main__':
     batch_size = 64
     model = us.u_net_segmentation(chanels = 3)
     model.compile(optimizer = Adam(lr = 1e-4), loss = jacard_coef_loss, metrics = ['accuracy', dice_coef, jacard_coef])
+
     im = np.array(load_transform_pictures('polyps\\input\\data\\*.jpg'))
+    im_test = np.array(load_transform_pictures('polyps\\test\\data\\*.jpg'))
     mask = np.array(load_transform_pictures('polyps\\input\\label\\*.jpg'))
+    mask_test = np.array(load_transform_pictures('polyps\\test\\label\\*.jpg'))
+    
     model.fit(x = im,
-                y=mask,
+                y = mask,
                 batch_size = batch_size,
                 epochs = 1, 
-                validation_split= 0.2
+                validation_split = 0.2
             )
     
     lab_pred = model.predict(im[:1])
 
     print("\nJaccard Coefficient for result: " + str(round(result_jaccard_coeff(mask[0], lab_pred[0])*100, 2)) + "%")
+    #evaluate = model.evaluate(x = im_test, y = mask_test, batch_size = batch_size)
+    #print("\nEvaluation : Loss: "+ str(round(evaluate[0], 4)) + ", Accuracy: " + str(round(evaluate[1], 4)) + ", Dice Coefficient: " + str(round(evaluate[2], 4)) + ", Jacard Coefficient: " + str(round(evaluate[3], 4)))
 
     plt.imshow(lab_pred[0])
     plt.show()
