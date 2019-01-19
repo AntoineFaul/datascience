@@ -96,14 +96,14 @@ config = {
 	},
 
 	'batch_size': BATCH_SIZE,
-	'loss': categorical_focal_loss(), #weighted_categorical_crossentropy(np.array([1,4,1,1])),#'categorical_crossentropy', #'dice_coef_loss', #'jacard_coef_loss',
+	'loss': weighted_categorical_crossentropy(np.array([1,3,1,1])), #weighted_categorical_crossentropy(np.array([1,4,1,1])),#'categorical_crossentropy', #'dice_coef_loss', #'jacard_coef_loss',
 	'metrics': ['accuracy', dice_coef, jacard_coef],
 	'fit': {
 		'steps_per_epoch': None, #1048//batch_size,
 		'validation_steps': None, #128//batch_size,
-		'epochs': 30,
+		'epochs': 300,
 		'shuffle': True,
-		'batch_size': None, #BATCH_SIZE,
+		'batch_size': 10, #BATCH_SIZE,
 		'class_weight': None,  #{0:1, 1:100, 2:1, 3:1}, #None, #(1,1,1,1),
 		'callbacks': [earlystopper], #, checkpointer], # use checkpointer if you want to save the model
 	},
