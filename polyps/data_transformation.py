@@ -46,7 +46,7 @@ def createMask(folderIn, folderOut, masks, masks_namesPrefixe = None):
     return(store_im)
  
 def create_binary_masks(path):
-    fileOut = make_path('polyps', 'output', 'label')
+    fileOut = make_path('polyps', 'output', 'binary')
 
     print("\rCreate Binary Masks from folder: " + path)
     
