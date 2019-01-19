@@ -57,6 +57,7 @@ def merge(array):
     return(final_images)
 
 def write_image(array, directory, file_name):
+    fm.clean_folder(fm.make_path('polyps', 'output'))
     index = 0
     img_store = []
 
@@ -103,7 +104,7 @@ if __name__ == "__main__":
     im = np.array(load_transform_pictures(fm.make_path('polyps', 'input', 'data', '*.jpg')))
     test = np.array(load_transform_pictures(fm.make_path('polyps', 'test','data', '*.jpg')))
     test_name = np.array(load_file_name(fm.make_path('polyps', 'test', 'data', '*.jpg')))
-    output = fm.make_path('polyps', 'output')
+    output = fm.make_path('polyps', 'output','data')
     path = fm.make_path('polyps', 'input', 'label')
     path_test = fm.make_path('polyps', 'test', 'label')
     mask = np.array(data_transformation.create_binary_masks(path = path)) 
