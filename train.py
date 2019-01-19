@@ -19,6 +19,12 @@ def load_transform_pictures(folder):
 
     return(x_train)
 
+def load_file_name(folder):
+    x_train = []
+    for filename in glob.glob(folder):
+        x_train.append(filename)
+    return(x_train)
+
 def pixel_class(c):
     if c == 1:
         return config['color']['rgb']['red']
@@ -50,21 +56,21 @@ def merge(array):
 
     return(final_images)
 
-def write_image(array, directory):
+def write_image(array, directory, file_name):
     index = 0
-    img_store =[]
+    img_store = []
 
     for image in array:
-        index = index +1
         img = Image.new('RGB', config['image_size'], "white")
 
         for i in range(config['image_max']):
             for j in range(config['image_max']):
-                img.putpixel((i,j),image[i][j])
-
-        name = '{0:04}'.format(index) + '_output.jpg'
+                img.putpixel((i, j), image[i][j])
+        n = (file_name[index].split(config['path_sep']))[-1]
+        name = '{}'.format(n)
         img.save(fm.make_path(directory, name))
         img_store.append(np.array(img))
+        index = index+1
     return img_store
 
 def dice_coef(y_true, y_pred):
@@ -96,6 +102,7 @@ if __name__ == "__main__":
 
     im = np.array(load_transform_pictures(fm.make_path('polyps', 'input', 'data', '*.jpg')))
     test = np.array(load_transform_pictures(fm.make_path('polyps', 'test','data', '*.jpg')))
+    test_name = np.array(load_file_name(fm.make_path('polyps', 'test', 'data', '*.jpg')))
     output = fm.make_path('polyps', 'output')
     path = fm.make_path('polyps', 'input', 'label')
     path_test = fm.make_path('polyps', 'test', 'label')
@@ -116,6 +123,6 @@ if __name__ == "__main__":
     history = history.history
     lab_pred = model.predict(test, verbose = 1)
     evaluate = model.evaluate(x = test, y = mask_test, batch_size = batch_size)
-    display_im = write_image(merge(lab_pred), output)
+    display_im = write_image(merge(lab_pred), output, test_name)
     plt.imshow(display_im[0])#plots the first picture
     print("Evaluation : Loss: "+ str(evaluate[0]) + ", Accuracy: " + str(evaluate[1]) + ", Dice Coefficient: " + str(evaluate[2]) + ", Jacard Coefficient: " + str(evaluate[3]))
