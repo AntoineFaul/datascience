@@ -42,9 +42,9 @@ def load_transform_pictures(folder):
 if __name__ == '__main__':
     batch_size = 128
     model = us.u_net_segmentation(chanels =3)
-    model.compile(optimizer = Adam(lr = 1e-4), loss =  jacard_coef_loss , metrics = ['accuracy',dice_coef,jacard_coef])
-    im = np.array(load_transform_pictures('C:\\Users\\MaxSchemmer\\Documents\\git\\datascience_v3\\polyps\\input\\data\\*.jpg'))
-    mask = np.array(load_transform_pictures('C:\\Users\\MaxSchemmer\\Documents\\git\\datascience_v3\\polyps\\input\\label\\*.jpg'))
+    model.compile(optimizer = Adam(lr = 1e-4), loss =  dice_coef_loss , metrics = ['accuracy',dice_coef,jacard_coef])
+    im = np.array(load_transform_pictures('polyps\\input\\data\\*.jpg'))
+    mask = np.array(load_transform_pictures('polyps\\input\\label\\*.jpg'))
     model.fit(x = im,y=mask,
                         batch_size = batch_size,
                         epochs = 30, 
