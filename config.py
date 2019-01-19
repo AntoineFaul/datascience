@@ -45,7 +45,7 @@ config = {
 	'image_size': (IMG_MAX_SIZE, IMG_MAX_SIZE),
 	'image_dimension': (IMG_MAX_SIZE, IMG_MAX_SIZE, 3),
 
-	'multiplier': 2,
+	'multiplier': 4,
 	'seed': 1,
 	'augmentation': {
 		'zoom_range': 0.0,
@@ -80,11 +80,10 @@ config = {
 	'fit': {
 		'steps_per_epoch': None, #1048//batch_size,
 		'validation_steps': None, #128//batch_size,
-		'epochs': 100,
+		'epochs': 1,
 		'shuffle': True,
 		'batch_size': None, #BATCH_SIZE,
-		'class_weight': None, #(1,1,1,1),
+		'class_weight': None, #(1, 1 , 1, 1),
 		'callbacks': [earlystopper], #, checkpointer], # use checkpointer if you want to save the model
-	},
-	'class_weight': (1,1,1,1)
+	}
 }

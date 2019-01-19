@@ -19,20 +19,12 @@ def load_transform_pictures(folder):
     return(x_train)
 
 def pixel_class(c):
-    '''if c == 1:
+    if c == 0:
         return config['color']['rgb']['red']
-    elif c == 2:
-        return config['color']['rgb']['green']
-    elif c == 3:
-        return config['color']['rgb']['blue']
-    else:
-        return config['color']['rgb']['black']'''
     if c == 1:
         return config['color']['rgb']['green']
-    elif c == 2:
-        return config['color']['rgb']['blue']
     else:
-        return config['color']['rgb']['red']
+        return config['color']['rgb']['blue']
         
 def find_class(c):
     return c.argmax()
@@ -72,19 +64,6 @@ def write_image(array, directory):
         img_store.append(np.array(img))
     return img_store
 
-def dice_coef(y_true, y_pred):
-    y_true_f = K.flatten(y_true)
-    y_pred_f = K.flatten(y_pred)
-    intersection = K.sum(y_true_f * y_pred_f)
-    return (2.0 * intersection + 1.0) / (K.sum(y_true_f) + K.sum(y_pred_f) + 1.0)
-
-
-def jacard_coef(y_true, y_pred): # between 0 and 1
-    y_true_f = K.flatten(y_true)
-    y_pred_f = K.flatten(y_pred)
-    intersection = K.sum(y_true_f * y_pred_f)
-    return (intersection + 1.0) / (K.sum(y_true_f) + K.sum(y_pred_f) - intersection + 1.0)
-
 #def weighted_categorical_crossentropy(weights):
 #    """ weighted_categorical_crossentropy
 #
@@ -109,13 +88,9 @@ def jacard_coef(y_true, y_pred): # between 0 and 1
 #            raise ValueError('WeightedCategoricalCrossentropy: not valid with logits')
 #    return loss
 
-def jacard_coef_loss(y_true, y_pred):
-    return -jacard_coef(y_true, y_pred)
-
-
 
 if __name__ == "__main__":
-    #data_augmentation.execute()
+    data_augmentation.execute()
 
     batch_size = config['batch_size']
     model = model.u_net(IMG_SIZE = config['image_dimension']) #what does the Adam optimizer do
@@ -135,8 +110,8 @@ if __name__ == "__main__":
     mask_test = mask_test[:, :, :, 1:]
   
     history = model.fit(x = im, y = mask,
-                        validation_data = (im, mask),
-                        #validation_split = config['validation_split'],
+                        #validation_data = (im, mask),
+                        validation_split = config['validation_split'],
                         steps_per_epoch = config['fit']['steps_per_epoch'],
                         validation_steps = config['fit']['validation_steps'],
                         epochs = config['fit']['epochs'],
