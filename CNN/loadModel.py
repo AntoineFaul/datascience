@@ -37,12 +37,12 @@ if __name__ == "__main__":
     test_labels_one_hot = to_categorical(test_dataSet[1])
 
     # load json and create model
-    json_file = open('model.json', 'r')
+    json_file = open('modelSave\\model.json', 'r')
     loaded_model_json = json_file.read()
     json_file.close()
     loaded_model = model_from_json(loaded_model_json)
     # load weights into new model
-    loaded_model.load_weights("model.h5")
+    loaded_model.load_weights("modelSave\\model.h5")
     print("Loaded model from disk")
      
     # evaluate loaded model on test data
@@ -50,5 +50,5 @@ if __name__ == "__main__":
     score = eval1 = loaded_model.evaluate(test_data, test_labels_one_hot)
     print("%s: %.2f%%" % (loaded_model.metrics_names[1], score[1]*100))
     
-    for history in pickled_items('history.pkl'):
+    for history in pickled_items('modelSave\\history.pkl'):
         classCNN.plot_history( history)
