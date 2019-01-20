@@ -17,23 +17,29 @@ def weighted_categorical_crossentropy(weights):
         return loss
     return loss
 
-def dice_coef(y_true, y_pred):
+def jacard_coef(y_true, y_pred, smooth = 100.0): #between 0 and 1
     y_true_f = K.flatten(y_true)
     y_pred_f = K.flatten(y_pred)
-    intersection = K.sum(y_true_f * y_pred_f)
-    return (2.0 * intersection + 1.0) / (K.sum(y_true_f) + K.sum(y_pred_f) + 1.0)
+    
+    y_inter = K.sum(y_true_f * y_pred_f)
+    y_sum = K.sum(y_true_f) + K.sum(y_pred_f)
+    
+    return (y_inter + smooth) / (y_sum - y_inter + smooth)
 
-def jacard_coef(y_true, y_pred):
+def jacard_coef_loss(y_true, y_pred, smooth = 100.0):
+    return (1 - jacard_coef(y_true, y_pred)) * smooth
+
+def dice_coef(y_true, y_pred, smooth = 100.0): #between 0 and 1
     y_true_f = K.flatten(y_true)
     y_pred_f = K.flatten(y_pred)
-    intersection = K.sum(y_true_f * y_pred_f)
-    return (intersection + 1.0) / (K.sum(y_true_f) + K.sum(y_pred_f) - intersection + 1.0)
 
-def jacard_coef_loss(y_true, y_pred):
-    return -jacard_coef(y_true, y_pred)
+    y_inter = K.sum(y_true_f * y_pred_f)
+    y_sum = K.sum(y_true_f) + K.sum(y_pred_f)
+    
+    return (2.0 * y_inter + smooth) / (y_sum + smooth)
 
-def dice_coef_loss(y_true, y_pred):
-    return -dice_coef(y_true, y_pred)
+def dice_coef_loss(y_true, y_pred, smooth = 100.0):
+    return (1 - dice_coef(y_true, y_pred)) * smooth
 
 earlystopper = EarlyStopping(monitor = 'val_jacard_coef', #stop when validation loss decreases
 								min_delta = 0, #if val_loss < 0 it stops
