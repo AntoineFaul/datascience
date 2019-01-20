@@ -122,7 +122,7 @@ def u_net_batch_norm_upc(output_channels =4, act = 'softmax'):
     up_c4 = Conv2D(neurons, (3, 3), activation='relu', padding='same') (up5)
     up_c4 = BatchNormalization()(up_c4)
     up_c4 = Conv2D(neurons, (3, 3), activation='relu', padding='same') (up_c4)
-    up_c4 = Dropout(0.2)(up_c4)
+    up_c4 = Dropout(0.4)(up_c4)
     
     conv_final = Conv2D(output_channels, (1, 1))(up_c4)
     conv_final = Activation(act)(conv_final)
