@@ -8,6 +8,7 @@ from keras import backend as K
 import glob
 import model
 from config import config
+from Segmentation.u_net_segmentation import u_net_segmentation
 
 
 def load_transform_pictures(folder):
@@ -96,7 +97,8 @@ if __name__ == "__main__":
     data_augmentation.execute()
 
     batch_size = config['batch_size']
-    model = model.u_net(IMG_SIZE = config['image_dimension']) #what does the Adam optimizer do
+    #model = model.u_net(IMG_SIZE = config['image_dimension']) #what does the Adam optimizer do
+    model = u_net_segmentation(); #model.u_net(IMG_SIZE = config['image_dimension']) #what does the Adam optimizer do
 
     model.compile(optimizer = Adam(lr = 1e-4), loss = config['loss'] , metrics = config['metrics'])
 

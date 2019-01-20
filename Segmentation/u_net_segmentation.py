@@ -7,7 +7,7 @@ from keras import backend as K
 from keras.optimizers import Adam
 from keras.layers.merge import concatenate
 from keras.utils.data_utils import get_file
-def u_net_segmentation(chanels =3):
+def u_net_segmentation(chanels = 3):
     inputs = Input((224, 224, chanels))
     neurons = 64
     
@@ -67,7 +67,7 @@ def u_net_segmentation(chanels =3):
     up_c4 = Conv2D(neurons, (3, 3), activation='relu', padding='same') (up_c4)
     up_c4 = Dropout(0.2)(up_c4)
     
-    conv_final = Conv2D(chanels, (1, 1))(up_c4)
+    conv_final = Conv2D(4, (1, 1))(up_c4)
     conv_final = Activation('sigmoid')(conv_final)
 
     model = Model(inputs, conv_final)

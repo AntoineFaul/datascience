@@ -3,8 +3,8 @@ from platform import system as getSystem
 import keras.backend as K
 import numpy as np
 
-IMG_MAX_SIZE = 256
-BATCH_SIZE = 64
+IMG_MAX_SIZE = 224
+BATCH_SIZE = 4
 
 
 
@@ -67,7 +67,7 @@ config = {
 	'image_size': (IMG_MAX_SIZE, IMG_MAX_SIZE),
 	'image_dimension': (IMG_MAX_SIZE, IMG_MAX_SIZE, 3),
 
-	'multiplier': 4,
+	'multiplier': 10,
 	'seed': 1,
 	'augmentation': {
 		'zoom_range': 0.0,
@@ -97,16 +97,16 @@ config = {
 	},
 
 	'batch_size': BATCH_SIZE,
-	'loss': categorical_focal_loss(),#weighted_categorical_crossentropy(np.array([1,3,0.5,1])), #weighted_categorical_crossentropy(np.array([1,4,1,1])),#'categorical_crossentropy', #'dice_coef_loss', #'jacard_coef_loss',
+	'loss': weighted_categorical_crossentropy(np.array([1,1.5,0.5,1])),#weighted_categorical_crossentropy(np.array([1,3,0.5,1])), #weighted_categorical_crossentropy(np.array([1,4,1,1])),#'categorical_crossentropy', #'dice_coef_loss', #'jacard_coef_loss',
 	'metrics': ['accuracy', dice_coef, jacard_coef],
 	'fit': {
 		'steps_per_epoch': None, #1048//batch_size,
 		'validation_steps': None, #128//batch_size,
-		'epochs': 500,
+		'epochs': 250,
 		'shuffle': True,
-		'batch_size': 10, #BATCH_SIZE,
+		'batch_size': BATCH_SIZE, #BATCH_SIZE,
 		'class_weight': None,  #{0:1, 1:100, 2:1, 3:1}, #None, #(1,1,1,1),
-		'callbacks': [earlystopper, checkpointer], #, checkpointer], # use checkpointer if you want to save the model
+		'callbacks': [checkpointer], #, checkpointer], # use checkpointer if you want to save the model
 	},
 	'class_weight': (1,1,1,1)
 }

@@ -48,8 +48,8 @@ def u_net(num_classes = 3, IMG_SIZE = config['image_dimension']):
     c8 = Conv2D(neurons*2, (3, 3), activation='relu', padding='same') (u8)
     c8 = Conv2D(neurons*2, (3, 3), activation='relu', padding='same') (c8)
     
-    u9 = Conv2DTranspose(32, (2, 2), strides=(2, 2), padding='same') (c8)
-    u9 = concatenate([u9, c1], axis=3)
+    u9 = Conv2DTranspose(neurons, (2, 2), strides=(2, 2), padding='same') (c8)
+    u9 = concatenate([u9, c1])
     c9 = Conv2D(neurons, (3, 3), activation='relu', padding='same') (u9)
     c9 = Conv2D(neurons, (3, 3), activation='relu', padding='same') (c9)
     
