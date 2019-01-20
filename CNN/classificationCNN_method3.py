@@ -2,6 +2,7 @@ import numpy as np
 
 import pickle
 import sys
+import os
 
 from keras.utils import to_categorical, print_summary
 from keras.preprocessing.image import ImageDataGenerator
@@ -177,21 +178,25 @@ if __name__ == "__main__":
 
 # %%
 
+    # folder preparation
+    if not os.path.exists(fm.make_path(config['folderModel'], config['nameModel'])):
+        os.makedirs(fm.make_path(config['folderModel'], config['nameModel']))
+    
     # serialize model to JSON
     model_json = model1.to_json()
-    with open(fm.make_path(config['folderModel'], config['nameModel'] + ".json"), "w") as json_file:
+    with open(fm.make_path(config['folderModel'], config['nameModel'], config['nameModel'] + ".json"), "w") as json_file:
         json_file.write(model_json)
 
     # serialize weights to HDF5
     model1.save_weights(fm.make_path(
-        config['folderModel'], config['nameModel'] + ".h5"))
+        config['folderModel'], config['nameModel'], config['nameModel'] + ".h5"))
     print("Saved model to disk")
 
     # save the history model
-    with open(fm.make_path(config['folderModel'], config['nameModel'] + ".pkl"), 'wb') as output:
+    with open(fm.make_path(config['folderModel'], config['nameModel'], config['nameModel'] + ".pkl"), 'wb') as output:
         pickle.dump(history1, output, pickle.HIGHEST_PROTOCOL)
 
     # save the plot of the full informations
     fig = plt.figure(3)
     fig.savefig(fm.make_path(
-        config['folderModel'], config['nameModel'] + ".png"))
+        config['folderModel'], config['nameModel'], config['nameModel'] + ".png"))
