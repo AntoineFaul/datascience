@@ -35,6 +35,9 @@ def jacard_coef_loss(y_true, y_pred):
 def dice_coef_loss(y_true, y_pred):
     return -dice_coef(y_true, y_pred)
 
+
+
+
 earlystopper = EarlyStopping(monitor = 'val_jacard_coef', #stop when validation loss decreases
 								min_delta = 0, #if val_loss < 0 it stops
 								patience = 20, #minimum amount of epochs
@@ -87,7 +90,7 @@ config = {
 	},
 
 	'batch_size': BATCH_SIZE,
-	'loss': weighted_categorical_crossentropy(np.array([1,3,0.5,1])), #weighted_categorical_crossentropy(np.array([1,4,1,1])),#'categorical_crossentropy', #'dice_coef_loss', #'jacard_coef_loss',
+	'loss': weighted_categorical_crossentropy(np.array([1,1.5,0.5,1])), #weighted_categorical_crossentropy(np.array([1,4,1,1])),#'categorical_crossentropy', #'dice_coef_loss', #'jacard_coef_loss',
 	'metrics': ['accuracy', dice_coef, jacard_coef],
 	'fit': {
 		'steps_per_epoch': None, #1048//batch_size,
