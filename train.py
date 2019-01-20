@@ -99,7 +99,7 @@ def result_jaccard_coeff(img1, img2):
 
 
 if __name__ == "__main__":
-#    data_augmentation.execute()
+    data_augmentation.execute()
 
     batch_size = config['batch_size']
 #    model = model.u_net(IMG_SIZE = config['image_dimension']) #what does the Adam optimizer do
@@ -124,7 +124,7 @@ if __name__ == "__main__":
                         shuffle = config['fit']['shuffle'],
                         batch_size = config['fit']['batch_size'],
                         class_weight = config['fit']['class_weight'],
-#                        callbacks = config['fit']['callbacks']  
+                        callbacks = config['fit']['callbacks']  
                     )
 
     history = history.history
