@@ -15,6 +15,7 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Sequential
 from keras.layers import Dense, Conv2D, Flatten, MaxPooling2D, Dropout
 from sklearn.utils import shuffle
+from matplotlib.gridspec import GridSpec, GridSpecFromSubplotSpec
 
 import polyps.file_manager as fm
 
@@ -190,7 +191,7 @@ def plot_history(history):
     plt.xlabel('Epochs ', fontsize=16)
     plt.title('Loss Curves', fontsize=16)
 
-    #plt.figure(figsize=[8, 6])
+    # plt.figure(figsize=[8, 6])
     plt.subplot(122)
     plt.plot(history.history['acc'], 'r', linewidth=3.0)
     plt.plot(history.history['val_acc'], 'b', linewidth=3.0)
@@ -222,47 +223,55 @@ def plot_performances(predict_succes, predict_fails):
         patch.set(facecolor='mistyrose')
 
 
-def plot_fullInformation(predictPerCent, history, predict_succes, predict_fails, name, analysis):
+def plot_fullInformation(predictPerCent, history, predict_succes, predict_fails, path, name, analysis):
 
     if(len(analysis) < 4):
         raise ValueError('plot_fullInformation : no enough analysis (<4)')
 
-    strAnalysis = [[str(analysis[0]), str(analysis[1])],
-                   [str(analysis[2]), str(analysis[3])]]
+    nbPicturesTested = analysis[0] + analysis[1] + analysis[2] + analysis[3]
+    cells = [["Class :", "Clean", "Dirty"], ["True", str(analysis[0]), str(analysis[2])],
+             ["False", str(analysis[1]), str(analysis[3])]]
 
-    plt.figure(3).clear()
-    fig, axs = plt.subplots(3, 2, num=3)
-    fig.subplots_adjust(hspace=0.4)
+    fig = plt.figure(3)
+    fig.clear()
+    gs = GridSpec(2, 2)
+    gs.update(hspace=0.4, bottom=0.05)
     fig.suptitle('Model name : ' + str(name), fontsize=18)
 
-    axs[0, 0].plot(history.history['loss'], 'r-+', linewidth=1)
-    axs[0, 0].plot(history.history['val_loss'], 'b-+', linewidth=1)
-    axs[0, 0].legend(['Training Accuracy', 'Validation Accuracy'],
-                     fontsize=10, loc='upper right', borderaxespad=0.)
-    axs[0, 0].grid(True)
-    axs[0, 0].set_xlabel('Epochs ')
-    axs[0, 0].set_title('Loss Curves', fontsize=12)
+    gs1 = GridSpecFromSubplotSpec(1, 2, subplot_spec=gs[0, :])
+    ax1 = plt.subplot(gs1[0])
+    ax1.plot(history.history['loss'], 'r-+', linewidth=1)
+    ax1.plot(history.history['val_loss'], 'b-+', linewidth=1)
+    ax1.legend(['Training Accuracy', 'Validation Accuracy'],
+               fontsize=10, loc='upper right', borderaxespad=0.)
+    ax1.grid(True)
+    ax1.set_xlabel('Epochs ')
+    ax1.set_title('Loss Curves', fontsize=12)
 
-    axs[0, 1].plot(history.history['acc'], 'r-+', linewidth=1)
-    axs[0, 1].plot(history.history['val_acc'], 'b-+', linewidth=1)
-    axs[0, 1].grid(True)
-    axs[0, 1].set_xlabel('Epochs ')
-    axs[0, 1].set_title('Accuracy Curves', fontsize=12)
+    ax2 = plt.subplot(gs1[1])
+    ax2.plot(history.history['acc'], 'r-+', linewidth=1)
+    ax2.plot(history.history['val_acc'], 'b-+', linewidth=1)
+    ax2.grid(True)
+    ax2.set_xlabel('Epochs ')
+    ax2.set_title('Accuracy Curves', fontsize=12)
+
+    # box plot part
+    gs2 = GridSpecFromSubplotSpec(2, 2, subplot_spec=gs[1, 0], wspace=0.3)
 
     # succes plot
-    bp = axs[1, 0].boxplot(predict_succes, patch_artist=True)
-    axs[1, 0].set_title(
+    ax3 = plt.subplot(gs2[:, 0])
+    bp = ax3.boxplot(predict_succes, patch_artist=True)
+    ax3.set_title(
         'Succes (' + str(round(predictPerCent, 2)) + '%)', fontsize=12)
-    axs[1, 0].grid(True)
+    ax3.grid(True)
+    ax3.set_ylabel('Probability given by the prediction')
 
     # fails plot
-    bp2 = axs[1, 1].boxplot(predict_fails, patch_artist=True)
-    axs[1, 1].set_title(
+    ax4 = plt.subplot(gs2[:, 1])
+    bp2 = ax4.boxplot(predict_fails, patch_artist=True)
+    ax4.set_title(
         'Fails (' + str(round(100 - predictPerCent, 2)) + '%)', fontsize=12)
-    axs[1, 1].grid(True)
-
-    axs[2, :].table(cellText=strAnalysis, rowLabels=[
-                    "True", "False"], colLabels=["Clean", "Dirty"])
+    ax4.grid(True)
 
     for element in ['boxes']:
         plt.setp(bp[element], color='green')
@@ -272,3 +281,36 @@ def plot_fullInformation(predictPerCent, history, predict_succes, predict_fails,
         patch.set(facecolor='honeydew')
     for patch in bp2['boxes']:
         patch.set(facecolor='mistyrose')
+
+    # test and table
+    gs3 = GridSpecFromSubplotSpec(2, 4, subplot_spec=gs[1, 1])
+
+    # print the table
+    ax5 = plt.subplot(gs3[0, 0:2])
+    ax5.axis('off')
+    color = ['lightgreen', 'mistyrose']
+    colorCell = [['white', 'white', 'white'],
+                 ['tab:green', 'lightgreen', 'lightgreen'],
+                 ['tab:red', 'mistyrose', 'mistyrose']]
+    table = ax5.table(cellText=cells, loc='center',
+                      cellColours=colorCell)
+    ax5.set_title('Analysis of the prediction', fontsize=12)
+    ax5.text(0.5, -0.05, '(' + str(nbPicturesTested) + ' pictures)',
+             horizontalalignment='center', fontsize=12)
+
+    for i in range(3):
+        for u in range(3):
+            table.get_celld()[(u, i)]._loc = 'center'
+            table.get_celld()[(u, i)].set_width = 2
+            table.get_celld()[(u, i)].set_height = 2
+
+    # Reading of the summary file
+    summary = ""
+    with open(fm.make_path(path, name + '.txt'), 'r') as myfile:
+        summary += myfile.read().replace("=", "*")
+
+    ax6 = plt.subplot(gs3[:, 2])
+    ax6.axis('off')
+    ax6.text(0, 0, summary, fontsize=5)
+    ax6.set_title('Model summary', fontsize=12,
+                  horizontalalignment='left')

@@ -3,7 +3,7 @@ import numpy as np
 import pickle
 import sys
 
-from keras.utils import to_categorical
+from keras.utils import to_categorical, print_summary
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import model_from_json
 from keras import callbacks
@@ -89,6 +89,11 @@ if __name__ == "__main__":
     model1.compile(optimizer=config['compile']['optimizer'],
                    loss=config['compile']['loss'], metrics=config['compile']['metrics'])
     model1.summary()
+    
+    # Open the file
+    with open(fm.make_path(config['folderModel'], config['nameModel']+'.txt'),'w') as fh:
+        # Pass the file handle in as a lambda function to make it callable
+        model1.summary(print_fn=lambda x: fh.write(x + '\n'))
 
 # %% fit the program
 
@@ -168,7 +173,7 @@ if __name__ == "__main__":
     # classCNN.plot_history(history1)
 
     classCNN.plot_fullInformation(
-        succes, history1, predict_succes=predict_succes, predict_fails=predict_fails, name=config['nameModel'], analysis=[trueClean, falseClean, trueDirty, falseDirty])
+        succes, history1, predict_succes=predict_succes, predict_fails=predict_fails, path=config['folderModel'], name=config['nameModel'], analysis=[trueClean, falseClean, trueDirty, falseDirty])
 
 # %%
 
