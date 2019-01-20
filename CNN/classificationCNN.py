@@ -20,25 +20,38 @@ import polyps.file_manager as fm
 
 # %% Function definition
 
-def createModel(input_shape, nClasses):
+
+def createModel(input_shape, nClasses, modelDict):
     model = Sequential()
-    model.add(Conv2D(5, (5, 5), padding='same',
-                     activation='relu', input_shape=input_shape))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
-    # model.add(Dropout(0.25))
 
-    model.add(Conv2D(5, (3, 3), padding='same', activation='relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
-    # model.add(Dropout(0.25))
-
-    model.add(Conv2D(5, (3, 3), padding='same', activation='relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
-    # model.add(Dropout(0.25))
-
-    model.add(Flatten())
-    model.add(Dense(5, activation='softmax'))
-    # model.add(Dropout(0.5))
-    model.add(Dense(nClasses, activation='softmax'))
+    for line in modelDict:
+        if(line['index'] == 'Conv2D'):
+            if(line['shape']):
+                model.add(Conv2D(line['filters'],
+                                 line['kernel_size'],
+                                 padding=line['padding'],
+                                 activation=line['activation'],
+                                 input_shape=input_shape))
+            else:
+                model.add(Conv2D(line['filters'],
+                                 line['kernel_size'],
+                                 padding=line['padding'],
+                                 activation=line['activation']))
+        elif(line['index'] == 'MaxPooling2D'):
+            model.add(MaxPooling2D(pool_size=line['pool_size']))
+        elif(line['index'] == 'Dropout'):
+            model.add(Dropout(line['rate']))
+        elif(line['index'] == 'Flatten'):
+            model.add(Flatten())
+        elif(line['index'] == 'Dense'):
+            if(line['units'] == 'nClasses'):
+                model.add(Dense(units=nClasses,
+                                activation=line['activation']))
+            else:
+                model.add(Dense(units=line['units'],
+                                activation=line['activation']))
+        else:
+            raise ValueError('Model can\'t be trainned')
 
     return model
 
@@ -67,7 +80,7 @@ def load_pictures(folder, maxsize):
     return(data)
 
 
-def create_data( folder, sameSize, maxsize):
+def create_data(folder, sameSize, maxsize):
     count_classes = 0
     min_data = -1
     data = []
@@ -75,10 +88,11 @@ def create_data( folder, sameSize, maxsize):
     print(str(len(os.listdir(folder))) + " classes found")
     for classe in os.listdir(folder):
         print(classe)
-        if( classe==".gitkeep"):
+        if(classe == ".gitkeep"):
             continue
-        print("loading classe : " + fm.make_path( folder, classe,"*.jpg") + "\n")
-        data_current = load_pictures( fm.make_path( folder, classe,"*.jpg"), maxsize)
+        print("loading classe : " + fm.make_path(folder, classe, "*.jpg") + "\n")
+        data_current = load_pictures(
+            fm.make_path(folder, classe, "*.jpg"), maxsize)
         label_current = [count_classes for i in range(len(data_current))]
         data.append(data_current)
         label.append(label_current)
@@ -100,7 +114,7 @@ def create_data( folder, sameSize, maxsize):
 
 def shuffle_split_data(data, label, perCent_Test):
     x, y = shuffle(data, label)
-    maxIndex = int((1-perCent_Test) * len(data))
+    maxIndex = int((1 - perCent_Test) * len(data))
     x_train = x[:maxIndex]
     x_test = x[maxIndex:]
     y_train = y[:maxIndex]
@@ -108,45 +122,48 @@ def shuffle_split_data(data, label, perCent_Test):
 
     return (x_train, y_train), (x_test, y_test)
 
+
 def shuffle_fairSplit_data(data, label, perCent_Test):
-    
-    maxIndex = int((1-perCent_Test) * len(data))
+
+    maxIndex = int((1 - perCent_Test) * len(data))
     rows, cols, channels = data.shape[1:]
-    x_train = np.empty( shape=(maxIndex, rows, cols, channels), dtype=np.uint8)
-    x_test = np.empty( shape=(len(data)-maxIndex, rows, cols, channels),dtype=np.uint8)
-    y_train = np.empty( shape=(maxIndex), dtype=np.uint8)
-    y_test = np.empty( shape=(len(data)-maxIndex), dtype=np.uint8)
-    
+    x_train = np.empty(shape=(maxIndex, rows, cols, channels), dtype=np.uint8)
+    x_test = np.empty(shape=(len(data) - maxIndex, rows,
+                             cols, channels), dtype=np.uint8)
+    y_train = np.empty(shape=(maxIndex), dtype=np.uint8)
+    y_test = np.empty(shape=(len(data) - maxIndex), dtype=np.uint8)
+
     cptClean = 0
     cptDirty = 0
     cptTrain = 0
     cptTest = 0
-    
+
     (data, label) = shuffle(data, label)
-    
+
     for i in range(len(data)):
-        if( label[i]==0): # Clean
-            if( cptClean<int(maxIndex/2)):
+        if(label[i] == 0):  # Clean
+            if(cptClean < int(maxIndex / 2)):
                 x_train[cptTrain] = data[i]
                 y_train[cptTrain] = 0
                 cptTrain += 1
-            else :
+            else:
                 x_test[cptTest] = data[i]
                 y_test[cptTest] = 0
                 cptTest += 1
             cptClean += 1
         else:
-            if( cptDirty<int(maxIndex/2)):
+            if(cptDirty < int(maxIndex / 2)):
                 x_train[cptTrain] = data[i]
                 y_train[cptTrain] = 1
                 cptTrain += 1
-            else :
+            else:
                 x_test[cptTest] = data[i]
                 y_test[cptTest] = 1
                 cptTest += 1
             cptDirty += 1
-           
-    return (x_train,y_train), (x_test, y_test)
+
+    return (x_train, y_train), (x_test, y_test)
+
 
 def plot_data(train_dataSet, test_dataSet):
     f = plt.figure(1)
@@ -161,11 +178,11 @@ def plot_data(train_dataSet, test_dataSet):
     plt.subplot(122)
     plt.imshow(test_dataSet[0][0], cmap='gray')
     plt.title("Label : {}".format(test_dataSet[1][0]))
-    
-    f.show() 
+
+    f.show()
 
 
-def plot_history( history):
+def plot_history(history):
     plt.figure()
     plt.subplot(121)
     plt.plot(history.history['loss'], 'r-+', linewidth=1.5)
@@ -177,65 +194,80 @@ def plot_history( history):
     plt.subplot(122)
     plt.plot(history.history['acc'], 'r', linewidth=3.0)
     plt.plot(history.history['val_acc'], 'b', linewidth=3.0)
-    plt.legend(['Training Accuracy', 'Validation Accuracy'], fontsize=10, bbox_to_anchor=(1.05, 1), loc='upper right', borderaxespad=0.)
+    plt.legend(['Training Accuracy', 'Validation Accuracy'], fontsize=10,
+               bbox_to_anchor=(1.05, 1), loc='upper right', borderaxespad=0.)
     plt.xlabel('Epochs ', fontsize=16)
     plt.title('Accuracy Curves', fontsize=16)
-    
-def plot_performances( predict_succes, predict_fails):
-    
+
+
+def plot_performances(predict_succes, predict_fails):
+
     fig, axs = plt.subplots(1, 2)
 
     # succes plot
     bp = axs[0].boxplot(predict_succes, patch_artist=True)
     axs[0].set_title('Succes')
-    
+
     # succes plot
     bp2 = axs[1].boxplot(predict_fails, patch_artist=True)
     axs[1].set_title('Fails')
-    
+
     for element in ['boxes']:
         plt.setp(bp[element], color='green')
         plt.setp(bp2[element], color='red')
-    
+
     for patch in bp['boxes']:
         patch.set(facecolor='honeydew')
     for patch in bp2['boxes']:
-        patch.set(facecolor='mistyrose')  
+        patch.set(facecolor='mistyrose')
 
-def plot_fullInformation( predictPerCent, history, predict_succes, predict_fails, name):
-    
+
+def plot_fullInformation(predictPerCent, history, predict_succes, predict_fails, name, analysis):
+
+    if(len(analysis) < 4):
+        raise ValueError('plot_fullInformation : no enough analysis (<4)')
+
+    strAnalysis = [[str(analysis[0]), str(analysis[1])],
+                   [str(analysis[2]), str(analysis[3])]]
+
     plt.figure(3).clear()
-    fig, axs = plt.subplots(2, 2, num=3)
+    fig, axs = plt.subplots(3, 2, num=3)
     fig.subplots_adjust(hspace=0.4)
-    fig.suptitle( 'Model name : ' + str(name) ,fontsize=18)
+    fig.suptitle('Model name : ' + str(name), fontsize=18)
 
-    axs[0,0].plot(history.history['loss'], 'r-+', linewidth=1)
-    axs[0,0].plot(history.history['val_loss'], 'b-+', linewidth=1)
-    axs[0,0].legend(['Training Accuracy', 'Validation Accuracy'], fontsize=10, loc='upper right', borderaxespad=0.)
-    axs[0,0].grid(True)
-    axs[0,0].set_xlabel('Epochs ')
-    axs[0,0].set_title('Loss Curves', fontsize=12)
+    axs[0, 0].plot(history.history['loss'], 'r-+', linewidth=1)
+    axs[0, 0].plot(history.history['val_loss'], 'b-+', linewidth=1)
+    axs[0, 0].legend(['Training Accuracy', 'Validation Accuracy'],
+                     fontsize=10, loc='upper right', borderaxespad=0.)
+    axs[0, 0].grid(True)
+    axs[0, 0].set_xlabel('Epochs ')
+    axs[0, 0].set_title('Loss Curves', fontsize=12)
 
-    axs[0,1].plot(history.history['acc'], 'r-+', linewidth=1)
-    axs[0,1].plot(history.history['val_acc'], 'b-+', linewidth=1)
-    axs[0,1].grid(True)
-    axs[0,1].set_xlabel('Epochs ')
-    axs[0,1].set_title('Accuracy Curves', fontsize=12)
+    axs[0, 1].plot(history.history['acc'], 'r-+', linewidth=1)
+    axs[0, 1].plot(history.history['val_acc'], 'b-+', linewidth=1)
+    axs[0, 1].grid(True)
+    axs[0, 1].set_xlabel('Epochs ')
+    axs[0, 1].set_title('Accuracy Curves', fontsize=12)
 
     # succes plot
-    bp = axs[1,0].boxplot(predict_succes, patch_artist=True)
-    axs[1,0].set_title('Succes (' + str(round(predictPerCent,2)) + '%)' , fontsize=12)
-    axs[1,0].grid(True)
-    
+    bp = axs[1, 0].boxplot(predict_succes, patch_artist=True)
+    axs[1, 0].set_title(
+        'Succes (' + str(round(predictPerCent, 2)) + '%)', fontsize=12)
+    axs[1, 0].grid(True)
+
     # fails plot
-    bp2 = axs[1,1].boxplot(predict_fails, patch_artist=True)
-    axs[1,1].set_title('Fails (' + str(round(100-predictPerCent,2)) + '%)', fontsize=12)
-    axs[1,1].grid(True)    
-    
+    bp2 = axs[1, 1].boxplot(predict_fails, patch_artist=True)
+    axs[1, 1].set_title(
+        'Fails (' + str(round(100 - predictPerCent, 2)) + '%)', fontsize=12)
+    axs[1, 1].grid(True)
+
+    axs[2, :].table(cellText=strAnalysis, rowLabels=[
+                    "True", "False"], colLabels=["Clean", "Dirty"])
+
     for element in ['boxes']:
         plt.setp(bp[element], color='green')
         plt.setp(bp2[element], color='red')
-    
+
     for patch in bp['boxes']:
         patch.set(facecolor='honeydew')
     for patch in bp2['boxes']:

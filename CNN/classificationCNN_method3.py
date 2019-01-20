@@ -11,6 +11,7 @@ from keras import callbacks
 import CNN.classificationCNN as classCNN
 import polyps.file_manager as fm
 import CNN.cnnConfig as cnnConfig
+import matplotlib.pyplot as plt
 
 # %% Import data
 
@@ -28,14 +29,14 @@ if __name__ == "__main__":
     # Importation trainning dataSet
     source_dataSet = classCNN.create_data(
         config['folderTrain'], True, config['maxsize'])
-    print("importation of " +
-          str(len(source_dataSet[0])) + " pictures as training data")
+    print("importation of "
+          + str(len(source_dataSet[0])) + " pictures as training data")
 
     # Importation testing dataSet
     test_dataSet = classCNN.create_data(
         config['folderTest'], True, config['maxsize'])
-    print("importation of " +
-          str(len(test_dataSet[0])) + " pictures as test data")
+    print("importation of "
+          + str(len(test_dataSet[0])) + " pictures as test data")
 
     # Creation of the validation dataSet
     (train_dataSet, validation_dataSet) = classCNN.shuffle_fairSplit_data(
@@ -76,17 +77,23 @@ if __name__ == "__main__":
     classes = np.unique(train_dataSet[1])
     nClasses = len(classes)
 
+    print(str(nClasses) + " classes detected")
+
     # Display the first images in data
     classCNN.plot_data(train_dataSet, test_dataSet)
 
 # %% Model Creation
 
-    model1 = classCNN.createModel(train_data.shape[1:], nClasses)
+    model1 = classCNN.createModel(
+        train_data.shape[1:], nClasses, config['model'])
     model1.compile(optimizer=config['compile']['optimizer'],
                    loss=config['compile']['loss'], metrics=config['compile']['metrics'])
     model1.summary()
 
 # %% fit the program
+
+    print("Hit a key to train the model ...")
+    input()
 
     callBacks = callbacks.EarlyStopping(
         monitor=config['callbacks']['monitor'],
@@ -143,17 +150,25 @@ if __name__ == "__main__":
     A = [not i for i in A[:]]
     predict_fails = predict[A, predict_class[A]]
 
-    print(predict_succes)
-
-    succes = (len(predict_succes) /
-              (len(predict_succes) + len(predict_fails)) * 100)
+    succes = (len(predict_succes)
+              / (len(predict_succes) + len(predict_fails)) * 100)
     print('Prediction : ' + str(succes) + '%')
+
+    # Analysis of the true and false result
+    trueClean = len(predict_class[[predict_class[i] == test_dataSet[1]
+                                   [i] and test_dataSet[1][i] == 0 for i in range(len(predict))]])
+    trueDirty = len(predict_class[[predict_class[i] == test_dataSet[1]
+                                   [i] and test_dataSet[1][i] == 1 for i in range(len(predict))]])
+    falseClean = len(predict_class[[predict_class[i] != test_dataSet[1]
+                                    [i] and test_dataSet[1][i] == 0 for i in range(len(predict))]])
+    falseDirty = len(predict_class[[predict_class[i] != test_dataSet[1]
+                                    [i] and test_dataSet[1][i] == 1 for i in range(len(predict))]])
 
     # classCNN.plot_performances( predict_succes=predict_succes, predict_fails=predict_fails)
     # classCNN.plot_history(history1)
 
     classCNN.plot_fullInformation(
-        succes, history1, predict_succes=predict_succes, predict_fails=predict_fails, name=config['nameModel'])
+        succes, history1, predict_succes=predict_succes, predict_fails=predict_fails, name=config['nameModel'], analysis=[trueClean, falseClean, trueDirty, falseDirty])
 
 # %%
 
@@ -167,6 +182,11 @@ if __name__ == "__main__":
         config['folderModel'], config['nameModel'] + ".h5"))
     print("Saved model to disk")
 
-    # Overwrites any existing file.
+    # save the history model
     with open(fm.make_path(config['folderModel'], config['nameModel'] + ".pkl"), 'wb') as output:
         pickle.dump(history1, output, pickle.HIGHEST_PROTOCOL)
+
+    # save the plot of the full informations
+    fig = plt.figure(3)
+    fig.savefig(fm.make_path(
+        config['folderModel'], config['nameModel'] + ".png"))
