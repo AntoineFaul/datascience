@@ -84,12 +84,19 @@ def jacard_coef(y_true, y_pred): # between 0 and 1
 def jacard_coef_loss(y_true, y_pred):
     return -jacard_coef(y_true, y_pred)
 
+def result_jaccard_coeff(img1, img2):
+    img1_t = K.variable(img1)
+    img2_t = K.variable(img2)
+
+    return K.eval(jacard_coef(img1_t, img2_t))
+
 
 if __name__ == "__main__":
-    data_augmentation.execute()
+#    data_augmentation.execute()
 
     batch_size = config['batch_size']
-    model = model.u_net(IMG_SIZE = config['image_dimension']) #what does the Adam optimizer do
+#    model = model.u_net(IMG_SIZE = config['image_dimension']) 
+    model = model.u_net_batch_norm_upc(act="softmax")
 
     model.compile(optimizer = Adam(lr = 1e-4), loss = config['loss'] , metrics = config['metrics'])
 
@@ -119,3 +126,4 @@ if __name__ == "__main__":
     display_im = write_image(merge(lab_pred), output)
     plt.imshow(display_im[0])#plots the first picture
     print("Evaluation : Loss: "+ str(evaluate[0]) + ", Accuracy: " + str(evaluate[1]) + ", Dice Coefficient: " + str(evaluate[2]) + ", Jacard Coefficient: " + str(evaluate[3]))
+    

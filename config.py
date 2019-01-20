@@ -2,7 +2,7 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint
 from platform import system as getSystem
 import keras.backend as K
 
-IMG_MAX_SIZE = 256
+IMG_MAX_SIZE = 224
 BATCH_SIZE = 32
 
 
@@ -80,9 +80,9 @@ config = {
 	'fit': {
 		'steps_per_epoch': None, #1048//batch_size,
 		'validation_steps': None, #128//batch_size,
-		'epochs': 1,
+		'epochs': 10,
 		'shuffle': True,
-		'batch_size': None, #BATCH_SIZE,
+		'batch_size': BATCH_SIZE, #BATCH_SIZE,
 		'class_weight': None, #(1,1,1,1),
 		'callbacks': [earlystopper], #, checkpointer], # use checkpointer if you want to save the model
 	},

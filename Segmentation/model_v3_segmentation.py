@@ -50,14 +50,18 @@ def result_jaccard_coeff(img1, img2):
     
 if __name__ == '__main__':
     batch_size = 64
-    model = us.u_net_segmentation(chanels = 3)
-    model.compile(optimizer = Adam(lr = 1e-4), loss = jacard_coef_loss, metrics = ['accuracy', dice_coef, jacard_coef])
-    im = np.array(load_transform_pictures('polyps\\input\\data\\*.jpg'))
-    mask = np.array(load_transform_pictures('polyps\\input\\label\\*.jpg'))
+#    model = us.u_net_segmentation(chanels = 3)
+    model = us.u_net(act='softmax')
+    model.compile(optimizer = Adam(lr = 1e-4), 
+               #   loss = jacard_coef_loss,
+                  loss = 'categorical_crossentropy',
+                  metrics = ['accuracy', dice_coef, jacard_coef])
+    im = np.array(load_transform_pictures('C:\\Users\\MaxSchemmer\\Documents\\git\\datascience_v3\\polyps\\input\\data\\*.jpg'))
+    mask = np.array(load_transform_pictures('C:\\Users\\MaxSchemmer\\Documents\\git\\datascience_v3\\polyps\\input\\label\\*.jpg'))
     model.fit(x = im,
                 y=mask,
                 batch_size = batch_size,
-                epochs = 1, 
+                epochs = 30, 
                 validation_split= 0.2
             )
     
