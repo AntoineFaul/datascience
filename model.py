@@ -1,5 +1,3 @@
-from keras.layers.convolutional import Conv2D, Conv2DTranspose
-from keras.layers.pooling import MaxPooling2D
 from keras.layers.merge import concatenate
 from keras.models import Model, load_model
 from keras.layers import Input, BatchNormalization, Dropout, Lambda
@@ -17,7 +15,7 @@ def u_net(num_classes = 3, IMG_SIZE = config['image_dimension']):
     inputs = Input(IMG_SIZE)
     s = BatchNormalization()(inputs) #Ioffe and Szegedy, 2015
     s = Dropout(0.5)(s)
-    neurons = 32 #original 64
+    neurons = 64 #original 64
     
     c1 = Conv2D(neurons, (3, 3), activation='relu', padding='same') (s)#(inputs)#
     c1 = Conv2D(neurons, (3, 3), activation='relu', padding='same') (c1)#original no padding

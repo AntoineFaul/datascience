@@ -91,6 +91,12 @@ def jacard_coef(y_true, y_pred): # between 0 and 1
 def jacard_coef_loss(y_true, y_pred):
     return -jacard_coef(y_true, y_pred)
 
+def result_jaccard_coeff(img1, img2):
+    img1_t = K.variable(img1)
+    img2_t = K.variable(img2)
+
+    return K.eval(jacard_coef(img1_t, img2_t))
+
 
 if __name__ == "__main__":
 #    data_augmentation.execute()
@@ -128,3 +134,4 @@ if __name__ == "__main__":
     plt.imshow(display_im[0])#plots the first picture
     plt.show()
     print("Evaluation : Loss: "+ str(evaluate[0]) + ", Accuracy: " + str(evaluate[1]) + ", Dice Coefficient: " + str(evaluate[2]) + ", Jacard Coefficient: " + str(evaluate[3]))
+    
