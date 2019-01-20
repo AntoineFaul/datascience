@@ -104,7 +104,7 @@ if __name__ == "__main__":
     batch_size = config['batch_size']
 #    model = model.u_net(IMG_SIZE = config['image_dimension']) #what does the Adam optimizer do
     model = model.u_net_batch_norm_upc()
-    model.compile(optimizer = Adam(lr = 1e-4), loss = config['loss'] , metrics = config['metrics'])
+    model.compile(optimizer = Adam(lr = 1e-2), loss = config['loss'] , metrics = config['metrics'])#4
 
 
     im = np.array(load_transform_pictures(fm.make_path('polyps', 'input', 'data', '*.jpg')))
@@ -129,8 +129,8 @@ if __name__ == "__main__":
 
     history = history.history
     lab_pred = model.predict(test, verbose = 1)
-    evaluate = model.evaluate(x = test, y = mask_test, batch_size = batch_size)
+#    evaluate = model.evaluate(x = test, y = mask_test, batch_size = batch_size)
     display_im = write_image(merge(lab_pred), output, test_name)
     plt.imshow(display_im[0])#plots the first picture
     plt.show()
-    print("Evaluation : Loss: "+ str(evaluate[0]) + ", Accuracy: " + str(evaluate[1]) + ", Dice Coefficient: " + str(evaluate[2]) + ", Jacard Coefficient: " + str(evaluate[3]))
+    #print("Evaluation : Loss: "+ str(evaluate[0]) + ", Accuracy: " + str(evaluate[1]) + ", Dice Coefficient: " + str(evaluate[2]) + ", Jacard Coefficient: " + str(evaluate[3]))

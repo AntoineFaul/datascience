@@ -65,6 +65,8 @@ def u_net(num_classes = 3, IMG_SIZE = config['image_dimension']):
 def u_net_batch_norm_upc(output_channels =4, act = 'softmax'):
     inputs = Input((224, 224, 3))
     neurons = 64
+    #s = BatchNormalization()(inputs) #Ioffe and Szegedy, 2015
+    #s = Dropout(0.15)(s)
     
     c1 = Conv2D(neurons, (3, 3), activation='relu', padding='same') (inputs)
     c1 = BatchNormalization()(c1)
