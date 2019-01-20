@@ -93,11 +93,11 @@ def jacard_coef_loss(y_true, y_pred):
 
 
 if __name__ == "__main__":
-    data_augmentation.execute()
+#    data_augmentation.execute()
 
     batch_size = config['batch_size']
-    model = model.u_net(IMG_SIZE = config['image_dimension']) #what does the Adam optimizer do
-
+#    model = model.u_net(IMG_SIZE = config['image_dimension']) #what does the Adam optimizer do
+    model = model.u_net_batch_norm_upc()
     model.compile(optimizer = Adam(lr = 1e-4), loss = config['loss'] , metrics = config['metrics'])
 
 
@@ -118,7 +118,7 @@ if __name__ == "__main__":
                         shuffle = config['fit']['shuffle'],
                         batch_size = config['fit']['batch_size'],
                         class_weight = config['fit']['class_weight'],
-                        callbacks = config['fit']['callbacks']  
+#                        callbacks = config['fit']['callbacks']  
                     )
 
     history = history.history

@@ -3,7 +3,7 @@ from platform import system as getSystem
 import keras.backend as K
 import numpy as np
 
-IMG_MAX_SIZE = 256
+IMG_MAX_SIZE = 224
 BATCH_SIZE = 64
 
 
@@ -16,16 +16,6 @@ def weighted_categorical_crossentropy(weights):
         loss = -K.sum(loss, -1)
         return loss
     return loss
-
-def categorical_focal_loss(gamma=2., alpha=.25):
-    def categorical_focal_loss_fixed(y_true, y_pred):
-        y_pred /= K.sum(y_pred, axis=-1, keepdims=True)
-        epsilon = K.epsilon()
-        y_pred = K.clip(y_pred, epsilon, 1.-epsilon)
-        cross_entropy = y_true * K.log(y_pred)
-        loss = alpha * K.pow(1-y_pred, gamma) * cross_entropy
-        return -K.sum(loss, -1)
-    return categorical_focal_loss_fixed
 
 def dice_coef(y_true, y_pred):
     y_true_f = K.flatten(y_true)
@@ -97,12 +87,12 @@ config = {
 	},
 
 	'batch_size': BATCH_SIZE,
-	'loss': categorical_focal_loss(),#weighted_categorical_crossentropy(np.array([1,3,0.5,1])), #weighted_categorical_crossentropy(np.array([1,4,1,1])),#'categorical_crossentropy', #'dice_coef_loss', #'jacard_coef_loss',
+	'loss': weighted_categorical_crossentropy(np.array([1,3,0.5,1])), #weighted_categorical_crossentropy(np.array([1,4,1,1])),#'categorical_crossentropy', #'dice_coef_loss', #'jacard_coef_loss',
 	'metrics': ['accuracy', dice_coef, jacard_coef],
 	'fit': {
 		'steps_per_epoch': None, #1048//batch_size,
 		'validation_steps': None, #128//batch_size,
-		'epochs': 500,
+		'epochs': 30,
 		'shuffle': True,
 		'batch_size': 10, #BATCH_SIZE,
 		'class_weight': None,  #{0:1, 1:100, 2:1, 3:1}, #None, #(1,1,1,1),
