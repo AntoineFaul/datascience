@@ -66,7 +66,7 @@ def write_image(array, directory, file_name):
 
         for i in range(config['image_max']):
             for j in range(config['image_max']):
-                img.putpixel((i, j), image[j][i])
+                img.putpixel((i, j), image[i][j])
         n = (file_name[index].split(config['path_sep']))[-1]
         name = '{}'.format(n)
         img.save(fm.make_path(directory, name))
@@ -124,7 +124,7 @@ if __name__ == "__main__":
                         shuffle = config['fit']['shuffle'],
                         batch_size = config['fit']['batch_size'],
                         class_weight = config['fit']['class_weight'],
-#                        callbacks = config['fit']['callbacks']  
+                        callbacks = config['fit']['callbacks']  
                     )
 
     history = history.history
