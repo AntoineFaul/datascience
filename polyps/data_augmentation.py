@@ -1,56 +1,37 @@
-from keras.preprocessing.image import ImageDataGenerator
-from polyps.file_manager import make_path, clean_subfolders, remove_except_files, load_image
-from random  import choice
-import glob
 import os
+import cv2
+import numpy as np
+from random  import choice
+from polyps.file_manager import make_path, clean_subfolders, remove_except_files
+import matplotlib.pyplot as plt
 from config import config
 
 INPUT_PATH = make_path('polyps', 'origin')
-OUTPUT_PATH = make_path('polyps', 'input')
-TEST_PATH = make_path('polyps', 'test')
+OUTPUT_PATHS = [make_path('polyps', 'input'), make_path('polyps', 'test')]
 
 SUBFOLDERS = os.listdir(INPUT_PATH)
 
 
-def createGenerator():
-    return  ImageDataGenerator(
-            zoom_range = config['augmentation']['zoom_range'], # range for random zoom (<1 : zoom in)
-            width_shift_range = config['augmentation']['width_shift_range'], # shift by fraction of total width
-            height_shift_range = config['augmentation']['height_shift_range'], # shift by fraction of total height
-            rotation_range = config['augmentation']['rotation_range'], # degree range for random rotations
-            brightness_range = config['augmentation']['brightness_range'], # degree range for brightness
-            horizontal_flip = config['augmentation']['flip']['horizontal'], # randomly flip images
-            vertical_flip = config['augmentation']['flip']['vertical']  # randomly flip images
-        )
+def rotate(img, rot):
+    rows, cols = len(img), len(img[0])
 
-def generator_flow(folder, batch_size, subfolder):
-    return createGenerator().flow_from_directory(
-            directory = folder,
-            batch_size = batch_size,
-            target_size = config['image_size'],
-            classes = [subfolder],
-            class_mode = None,
-            save_format = 'jpg',
-            save_to_dir = make_path(OUTPUT_PATH, subfolder),
-            seed = config['seed']
-        )
+    # Rotation
+    M1 = cv2.getRotationMatrix2D((cols/2, rows/2), rot, 1)
+    dst = cv2.warpAffine(img, M1, (cols, rows))
 
-def dataWithLabel_Generator():
-    clean_subfolders(OUTPUT_PATH)
+    # Zoom for black corner removal
+    zoom = round((-(1/45)*pow(rot%90 - 45, 2) + 45) / 45 * 0.3, 2)
 
-    batch_size = len(glob.glob(make_path(INPUT_PATH, SUBFOLDERS[0], '*.jpg')))
-    generators = []
+    pts1 = np.float32([[int(rows*(zoom/2)), int(cols*(zoom/2))], [int(rows-(rows*(zoom/2))), int(cols*(zoom/2))], [int(rows*(zoom/2)), int(cols-(cols*(zoom/2)))], [int(rows-(rows*(zoom/2))), int(cols-(cols*(zoom/2)))]])
+    pts2 = np.float32([[0, 0], [rows, 0], [0, cols], [rows, cols]])
 
-    for subfolder in SUBFOLDERS:
-        print("\nAugmentation of subfolder: " + subfolder)
-        generators.append(generator_flow(INPUT_PATH, batch_size, subfolder))
-        print("Creation of " + str(batch_size*config['multiplier']) + " augmented images.")
-    
-    trainGenerator = zip(generators[0], generators[1])
-        
-    for i, batch in enumerate(trainGenerator):
-        if (i >= config['multiplier']-1):
-            break
+    M2 = cv2.getPerspectiveTransform(pts1, pts2)
+
+    dst = cv2.warpPerspective(dst, M2, (rows, cols))
+
+    dst = cv2.resize(dst, config['image_size'], interpolation = cv2.INTER_CUBIC)
+
+    return dst
 
 def test_split():
     input_list = os.listdir(make_path(INPUT_PATH, SUBFOLDERS[0]))
@@ -63,24 +44,32 @@ def test_split():
         test_list.append(im)
         input_list.remove(im)
 
-    test_list = ['_' + filename.split('.jpg')[0] + '_*.jpg' for filename in test_list]
-
-    return test_list
-
-def extract_test(test_list):
-    clean_subfolders(TEST_PATH)
-
-    for elt in test_list:
-        for subfolder in SUBFOLDERS:
-            for filename in glob.glob(make_path(OUTPUT_PATH, subfolder, elt)):
-                os.rename(filename, TEST_PATH + filename.split(OUTPUT_PATH)[-1])
-
+    return [input_list, test_list]
 
 def execute():
-    # This function will generate the pictures/marker
-    # /!\ All of files inside the both subfolders of the Output folder will be delete before.
+    print("\nData Augmentation:\n")
 
-    dataWithLabel_Generator()
-    extract_test(test_split())
+    for output_path in OUTPUT_PATHS:
+        print("Clean folder: " + output_path)
+        clean_subfolders(output_path)
 
-    print("\nAugmentation done.\n")
+    lists = test_split()
+
+    print("\nData set % for testing: " + str(config['test_split']*100) + " %")
+
+    for i in range(len(OUTPUT_PATHS)):
+        print()
+        for j in range(len(lists[i])):
+            for k in range(config['multiplier']):
+                for subfolder in SUBFOLDERS:
+                    print("\r[" + str(i) + "/" + str(len(OUTPUT_PATHS)-1) + "] --> Nb of images: " + str((j+1)*(k+1)), end = '')
+
+                    img = cv2.imread(make_path(INPUT_PATH, subfolder, lists[i][j]))
+                    dst = rotate(img, int(k * (360/config['multiplier'])))
+
+                    filename = lists[i][j].split('.')[0]
+                    filename += '_' + str(k) + '.jpg'
+
+                    cv2.imwrite(make_path(OUTPUT_PATHS[i], subfolder, filename), dst)
+
+    print("\n\nAugmentation done.\n")

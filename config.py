@@ -63,19 +63,7 @@ config = {
 	'image_size': (IMG_MAX_SIZE, IMG_MAX_SIZE),
 	'image_dimension': (IMG_MAX_SIZE, IMG_MAX_SIZE, 3),
 
-	'multiplier': 4,
-	'seed': 1,
-	'augmentation': {
-		'zoom_range': 0.0,
-		'height_shift_range': 0.0,
-		'width_shift_range': 0.0,
-		'rotation_range': 0, #90,
-		'brightness_range': None,#(0.75,1.25),
-		'flip': {
-			'horizontal': True,
-			'vertical': True
-		}
-	},
+	'multiplier': 1,
 
 	'color': {
 		'rgb': {
