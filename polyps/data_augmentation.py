@@ -1,5 +1,5 @@
 from keras.preprocessing.image import ImageDataGenerator
-from polyps.file_manager import make_path, clean_folder_group, remove_except_files
+from polyps.file_manager import make_path, clean_subfolders, remove_except_files, load_image
 from random  import choice
 import glob
 import os
@@ -9,8 +9,7 @@ INPUT_PATH = make_path('polyps', 'origin')
 OUTPUT_PATH = make_path('polyps', 'input')
 TEST_PATH = make_path('polyps', 'test')
 
-CLASS_DATA = 'data'
-CLASS_LABEL = 'label'
+SUBFOLDERS = os.listdir(INPUT_PATH)
 
 
 def createGenerator():
@@ -19,60 +18,69 @@ def createGenerator():
             width_shift_range = config['augmentation']['width_shift_range'], # shift by fraction of total width
             height_shift_range = config['augmentation']['height_shift_range'], # shift by fraction of total height
             rotation_range = config['augmentation']['rotation_range'], # degree range for random rotations
-            brightness_range = config['augmentation']['brightness_range'],
+            brightness_range = config['augmentation']['brightness_range'], # degree range for brightness
             horizontal_flip = config['augmentation']['flip']['horizontal'], # randomly flip images
             vertical_flip = config['augmentation']['flip']['vertical']  # randomly flip images
         )
 
-def generator_flow(image_path, batch_size, class_type):
+def generator_flow(folder, batch_size, subfolder):
     return createGenerator().flow_from_directory(
-            image_path,
+            directory = folder,
             batch_size = batch_size,
-            classes = [class_type],
             target_size = config['image_size'],
+            classes = [subfolder],
             class_mode = None,
             save_format = 'jpg',
-            save_to_dir = make_path(OUTPUT_PATH , class_type),
+            save_to_dir = make_path(OUTPUT_PATH, subfolder),
             seed = config['seed']
         )
 
 def dataWithLabel_Generator():
-    clean_folder_group(OUTPUT_PATH, CLASS_DATA, CLASS_LABEL)
+    clean_subfolders(OUTPUT_PATH)
 
-    path1 = make_path(INPUT_PATH, CLASS_DATA, "*.jpg")
-    path2 = make_path(INPUT_PATH, CLASS_LABEL, "*.jpg")
-    print("\nAugmentation of classe : " + make_path(INPUT_PATH, CLASS_DATA))
-    print("Augmentation of classe : " + make_path(INPUT_PATH, CLASS_LABEL))
+    batch_size = len(glob.glob(make_path(INPUT_PATH, SUBFOLDERS[0], '*.jpg')))
+    generators = []
 
-    imageGenerator = generator_flow(INPUT_PATH, len(glob.glob(path1)), CLASS_DATA)
-    maskGenerator = generator_flow(INPUT_PATH, len(glob.glob(path2)), CLASS_LABEL)
+    for subfolder in SUBFOLDERS:
+        print("\nAugmentation of subfolder: " + subfolder)
+        generators.append(generator_flow(INPUT_PATH, batch_size, subfolder))
+        print("Creation of " + str(batch_size*config['multiplier']) + " augmented images.")
     
-    trainGenerator = zip(imageGenerator, maskGenerator)
+    trainGenerator = zip(generators[0], generators[1])
         
     for i, batch in enumerate(trainGenerator):
         if (i >= config['multiplier']-1):
             break
 
-def extract_data_test():
-    clean_folder_group(TEST_PATH, CLASS_DATA, CLASS_LABEL)
-    images = os.listdir(make_path(OUTPUT_PATH, CLASS_DATA))
-    remove_except_files(images)
-    
-    im_list = []
+def test_split():
+    input_list = os.listdir(make_path(INPUT_PATH, SUBFOLDERS[0]))
+    remove_except_files(input_list)
 
-    for i in range(int(len(images)*config['test_split'])):
-        im = choice(images)
-        im_list.append(im)
-        images.remove(im)
+    test_list = []
 
-    for filename in im_list:
-        os.rename(make_path(OUTPUT_PATH, CLASS_DATA, filename), make_path(TEST_PATH, CLASS_DATA, filename))
-        os.rename(make_path(OUTPUT_PATH, CLASS_LABEL, filename), make_path(TEST_PATH, CLASS_LABEL, filename))
+    for i in range(int(len(input_list)*config['test_split'])):
+        im = choice(input_list)
+        test_list.append(im)
+        input_list.remove(im)
+
+    test_list = ['_' + filename.split('.jpg')[0] + '_*.jpg' for filename in test_list]
+
+    return test_list
+
+def extract_test(test_list):
+    clean_subfolders(TEST_PATH)
+
+    for elt in test_list:
+        for subfolder in SUBFOLDERS:
+            for filename in glob.glob(make_path(OUTPUT_PATH, subfolder, elt)):
+                os.rename(filename, TEST_PATH + filename.split(OUTPUT_PATH)[-1])
+
 
 def execute():
     # This function will generate the pictures/marker
     # /!\ All of files inside the both subfolders of the Output folder will be delete before.
-    dataWithLabel_Generator()
-    extract_data_test()
 
-    print("Augmentation done.\n")
+    dataWithLabel_Generator()
+    extract_test(test_split())
+
+    print("\nAugmentation done.\n")

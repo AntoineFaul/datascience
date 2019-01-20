@@ -64,7 +64,7 @@ config = {
 		'height_shift_range': 0.0,
 		'width_shift_range': 0.0,
 		'rotation_range': 0, #90,
-		'brightness_range': (0.75,1.25),
+		'brightness_range': None,#(0.75,1.25),
 		'flip': {
 			'horizontal': True,
 			'vertical': True

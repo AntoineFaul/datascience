@@ -24,8 +24,8 @@ def clean_folder(forlder):
         if (not(filename in config['except_files'])):
             os.remove(forlder + config['path_sep'] + filename)
 
-def clean_folder_group(folder_group, *sub_folders):
-    for folder in [make_path(folder_group, sub_folder) for sub_folder in sub_folders]:
+def clean_subfolders(folder):
+    for folder in [make_path(folder, sub_folder) for sub_folder in os.listdir(folder)]:
         clean_folder(folder)
 
 def remove_except_files(files):
