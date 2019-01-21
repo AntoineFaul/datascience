@@ -2,18 +2,24 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint
 from platform import system as getSystem
 import keras.backend as K
 import numpy as np
-import tensorflow as tf
 
+
+PATH_SEP = '\\' if getSystem() == 'Windows' else '/'
 
 CHANNELS = 3
 IMG_MAX_SIZE = 224
 BATCH_SIZE = 8
 
 
+def model_predict(model, img_save, img_test, output_path):
+    lab_pred = model.predict(img_test, verbose = 1)
+    img_save(lab_pred, output_path)
+
+    return lab_pred
+
 def model_evaluate(model, img_test, mask_test):
     evaluate = model.evaluate(x = img_test, y = mask_test, batch_size = config['batch_size'])
     print("\nEvaluation : Loss: "+ str(round(evaluate[0], 4)) + ", Accuracy: " + str(round(evaluate[1], 4)) + ", Dice Coefficient: " + str(round(evaluate[2], 4)) + ", Jacard Coefficient: " + str(round(evaluate[3], 4)))
-
 
 
 def weighted_categorical_crossentropy(weights):
@@ -40,6 +46,12 @@ def jacard_coef(y_true, y_pred, smooth = 100.0): #between 0 and 1
 def jacard_coef_loss(y_true, y_pred, smooth = 100.0):
     return (1 - jacard_coef(y_true, y_pred)) * smooth
 
+def result_jaccard_coeff(img1, img2):
+    img1_t = K.variable(img1)
+    img2_t = K.variable(img2)
+
+    return K.eval(jacard_coef(img1_t, img2_t))
+
 def dice_coef(y_true, y_pred, smooth = 100.0): #between 0 and 1
     y_true_f = K.flatten(y_true)
     y_pred_f = K.flatten(y_pred)
@@ -58,11 +70,11 @@ earlystopper = EarlyStopping(monitor = 'val_loss', #stop when validation loss de
 								verbose = 1,
 								mode = 'auto') # print a text
 
-checkpointer = ModelCheckpoint('model.h5', verbose = 1, save_best_only = True, monitor='val_jacard_coef', mode='max')
+checkpointer = ModelCheckpoint('neural_networks' + PATH_SEP + 'pixel_classification' + PATH_SEP + 'model.h5', verbose = 1, save_best_only = True, monitor ='val_jacard_coef', mode = 'max')
 
 
 config = {
-	'path_sep': '\\' if getSystem() == 'Windows' else '/',
+	'path_sep': PATH_SEP,
 	'except_files': ['.gitkeep'],
 
 	'dtype': 'float32',
@@ -78,14 +90,9 @@ config = {
 
 	'multiplier': 1,
 
-	'color': {
+	'colors': {
 		'rgb': [(0, 0, 0), (255, 0, 0), (0, 255, 0), (0, 0, 255)],
-		'binary': {
-			'red': [1, 0, 0],
-			'green': [0, 1, 0],
-			'blue': [0, 0, 1],
-			'black': [0, 0, 0]
-		}
+		'binary': [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]]
 	},
 
 	'batch_size': BATCH_SIZE,
@@ -100,7 +107,7 @@ config = {
 	},
 
 	'fit': {
-		'epochs': 1,
+		'epochs': 5,
 		'shuffle': True,
 		'batch_size': BATCH_SIZE,
 		'callbacks': [checkpointer], # use checkpointer if you want to save the model

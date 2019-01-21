@@ -1,6 +1,6 @@
 __pycache__
 *.jpg
 
-model-polyp\.h5
+*.h5
 
 h5py/h5f\.pyx

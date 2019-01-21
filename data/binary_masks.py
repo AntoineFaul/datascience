@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-from .file_manager import make_path, load_image, clean_folder, list_dir
+from .manager import make_path, load_image, list_dir
 from config import config
 
 
@@ -29,18 +29,14 @@ def createMask(folderIn, masks):
 
     return store_im
  
-def create_binary_masks(path):
+def create(path):
     print("\rCreate Binary Masks from folder: " + path)
-    
-    # mask to create 
-    masks = np.array([config['color']['binary']['black'],
-                        config['color']['binary']['red'],
-                        config['color']['binary']['green'],
-                        config['color']['binary']['blue']])
+
+    masks = np.array(config['colors']['binary'])
 
     # create the pictures
-    plop = createMask(folderIn = path, masks = masks)
-    chunks = [np.swapaxes(np.array(plop[x:x+4]), 0, 2) for x in range(0, len(plop), 4)]  
+    plop = createMask(path, masks)
+    chunks = [np.swapaxes(np.array(plop[x : x+4]), 0, 2) for x in range(0, len(plop), 4)]  
 
     print("\rDone. (Nb = " + str(len(chunks)) + ")\n")
     return chunks

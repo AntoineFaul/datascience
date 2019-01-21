@@ -49,15 +49,8 @@ def remove_except_files(files):
             files.remove(file)
 
 def load_imgs():
-    img_train = np.array(load_images(make_path('polyps', 'training', 'data')))
-    img_val = np.array(load_images(make_path('polyps', 'validation', 'data')))
-    img_test = np.array(load_images(make_path('polyps', 'test', 'data')))
+    img_train = np.array(load_images(make_path('polyps', 'training', 'data')), dtype = config['dtype'])
+    img_val = np.array(load_images(make_path('polyps', 'validation', 'data')), dtype = config['dtype'])
+    img_test = np.array(load_images(make_path('polyps', 'test', 'data')), dtype = config['dtype'])
 
     return (img_train, img_val, img_test)
-
-def load_masks():
-    mask_train = np.array(load_images(make_path('polyps', 'training', 'label')))
-    mask_val = np.array(load_images(make_path('polyps', 'validation', 'label')))
-    mask_test = np.array(load_images(make_path('polyps', 'test', 'label')))
-
-    return (mask_train, mask_val, mask_test)

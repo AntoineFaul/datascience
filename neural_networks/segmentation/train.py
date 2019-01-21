@@ -1,37 +1,34 @@
 import cv2
 import numpy as np
+from matplotlib.pyplot import imsave
 from keras.optimizers import Adam
 
 from .model import u_net
+from .save import write_images
 from data import augmentation, manager
-from config import config, jacard_coef_loss, jacard_coef, dice_coef
+from config import config, model_evaluate, model_predict
 
 
-def model_evaluate(model, img_test, mask_test):
-    evaluate = model.evaluate(x = img_test, y = mask_test, batch_size = config['batch_size'])
-    print("\nEvaluation : Loss: "+ str(round(evaluate[0], 4)) + ", Accuracy: " + str(round(evaluate[1], 4)) + ", Dice Coefficient: " + str(round(evaluate[2], 4)) + ", Jacard Coefficient: " + str(round(evaluate[3], 4)))
+def load_masks():
+    mask_train = np.array(manager.load_images(manager.make_path('polyps', 'training', 'label')), dtype = config['dtype'])
+    mask_val = np.array(manager.load_images(manager.make_path('polyps', 'validation', 'label')), dtype = config['dtype'])
+    mask_test = np.array(manager.load_images(manager.make_path('polyps', 'test', 'label')), dtype = config['dtype'])
 
-def model_predict(model, img_test, output_path):
-    manager.clean_folder(output_path)
-    
-    lab_pred = model.predict(img_test, verbose = 1)
-    names = manager.list_dir(manager.make_path('polyps', 'test', 'data'))
-
-    for i in range(len(lab_pred)):
-        cv2.imwrite(manager.make_path(output_path, names[i]), lab_pred[i])
+    return (mask_train, mask_val, mask_test)
 
 
 def execute(run_data_augmentation = True):
     if run_data_augmentation:
         augmentation.execute()
 
+    output_path = manager.make_path('polyps', 'output', 'segmentation')
+    manager.clean_folder(output_path)
+
     model = u_net()
     model.compile(optimizer = Adam(lr = 1e-4), loss = config['segmentation']['loss'], metrics = config['segmentation']['metrics'])
 
     (img_train, img_val, img_test) = manager.load_imgs()
-    (mask_train, mask_val, mask_test) = manager.load_masks()
-
-    output_path = manager.make_path('polyps', 'output', 'segmentation')
+    (mask_train, mask_val, mask_test) = load_masks()
     
     model.fit(x = img_train,
                 y = mask_train,
@@ -41,5 +38,5 @@ def execute(run_data_augmentation = True):
                 epochs = config['fit']['epochs']
             )
     
-    model_predict(model, img_test, output_path)
+    model_predict(model, write_images, img_test, output_path)
     model_evaluate(model, img_test, mask_test)

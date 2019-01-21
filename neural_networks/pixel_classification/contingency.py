@@ -5,8 +5,9 @@ def create_binary(a, n = 1):
     binary = []
 
     for i in range(len(a)):
-    # a : Input array
-    # n : We want n-max element position to be set to 1
+    	# a : Input array
+    	# n : We want n-max element position to be set to 1
+        
         out = np.zeros_like(a[i])
         out[np.arange(len(a[i])), np.argpartition(a[i], -n, axis = 1)[:, -n]] = 1
         binary.append(out)
@@ -21,7 +22,7 @@ def table(lab_pred, mask_test):
     for j in range(len(mask_test)):
         for i in range(classes):
             output_binary = np.array(create_binary(lab_pred[j]))*2
-            mask_output_comparison = np.subtract(mask_test[j][:,:,i],output_binary[:,:,i])
+            mask_output_comparison = np.subtract(mask_test[j][:, :, i],output_binary[:, :, i])
             fp = (mask_output_comparison==-2).sum()
             tp = (mask_output_comparison==-1).sum()
             tn = (mask_output_comparison==0).sum()
@@ -49,17 +50,17 @@ def table(lab_pred, mask_test):
     wall = wall / sum(wall)
     dirt = dirt / sum(dirt)
 
-    print("Background: " + "FP: " + str(round(background[0], 3)) + " TP: "+ str(round(background[1], 3)) + " TN: " + str(round(background[2], 3)) + " FN: " + str(round(background[3], 3)))
+    print("\nBackground: " + "FP: " + str(round(background[0], 3)) + " TP: "+ str(round(background[1], 3)) + " TN: " + str(round(background[2], 3)) + " FN: " + str(round(background[3], 3)))
     print("Polype: "+"FP: " + str(round(polype[0], 3)) + " TP: "+ str(round(polype[1], 3)) + " TN: " + str(round(polype[2], 3))+" FN: " + str(round(polype[3], 3)))
     print("Wall: "+"FP: " + str(round(wall[0], 3)) + " TP: " + str(round(wall[1], 3)) + " TN: " + str(round(wall[2], 3)) +" FN: " + str(round(wall[3], 3)))
-    print("Dirt: "+"FP: " + str(round(dirt[0], 3)) + " TP: " + str(round(dirt[1], 3)) + " TN: " + str(round(dirt[2], 3)) +" FN: " + str(round(dirt[3], 3)))
+    print("Dirt: "+"FP: " + str(round(dirt[0], 3)) + " TP: " + str(round(dirt[1], 3)) + " TN: " + str(round(dirt[2], 3)) +" FN: " + str(round(dirt[3], 3)) + '\n')
 
 def overall_table(lab_pred, mask_test):
     fp, tp, tn, fn = (0, 0, 0, 0)
 
     for j in range(len(mask_test)):
         output_binary = np.array(create_binary(lab_pred[j]))*2
-        mask_output_comparison = np.subtract(mask_test[j],output_binary)
+        mask_output_comparison = np.subtract(mask_test[j], output_binary)
         fp += (mask_output_comparison==-2).sum()
         tp += (mask_output_comparison==-1).sum()
         tn += (mask_output_comparison==0).sum()
@@ -72,4 +73,4 @@ def overall_table(lab_pred, mask_test):
     tn = tn / sum_classses
     fn = fn / sum_classses
 
-    print("FP: " + str(round(fp, 3)) + " TP: " + str(round(tp, 3)) + " TN: " + str(round(tn, 3)) + " FN: " + str(round(fn, 3)))
+    print("\nFP: " + str(round(fp, 3)) + " TP: " + str(round(tp, 3)) + " TN: " + str(round(tn, 3)) + " FN: " + str(round(fn, 3)) + '\n')
