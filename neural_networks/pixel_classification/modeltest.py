@@ -1,4 +1,3 @@
-
 import model
 from keras.models import Model, load_model
 from keras.callbacks import EarlyStopping, ModelCheckpoint
