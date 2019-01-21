@@ -1,7 +1,7 @@
 import cv2
-import glob
 import numpy as np
-from polyps.file_manager import make_path, load_image, clean_folder, list_dir
+
+from .file_manager import make_path, load_image, clean_folder, list_dir
 from config import config
 
 

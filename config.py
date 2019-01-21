@@ -5,17 +5,27 @@ import numpy as np
 import tensorflow as tf
 
 
+CHANNELS = 3
 IMG_MAX_SIZE = 224
 BATCH_SIZE = 8
+
+
+def model_evaluate(model, img_test, mask_test):
+    evaluate = model.evaluate(x = img_test, y = mask_test, batch_size = config['batch_size'])
+    print("\nEvaluation : Loss: "+ str(round(evaluate[0], 4)) + ", Accuracy: " + str(round(evaluate[1], 4)) + ", Dice Coefficient: " + str(round(evaluate[2], 4)) + ", Jacard Coefficient: " + str(round(evaluate[3], 4)))
+
 
 
 def weighted_categorical_crossentropy(weights):
     def loss(y_true, y_pred):
         y_pred /= K.sum(y_pred, axis=-1, keepdims=True)
         y_pred = K.clip(y_pred, K.epsilon(), 1- K.epsilon())
+
         loss = y_true * K.log(y_pred) * weights
         loss = -K.sum(loss, -1)
+
         return loss
+
     return loss
 
 def jacard_coef(y_true, y_pred, smooth = 100.0): #between 0 and 1
@@ -48,7 +58,7 @@ earlystopper = EarlyStopping(monitor = 'val_loss', #stop when validation loss de
 								verbose = 1,
 								mode = 'auto') # print a text
 
-checkpointer = ModelCheckpoint('model-polyp.h5', verbose = 1, save_best_only = True, monitor='val_jacard_coef', mode='max')
+checkpointer = ModelCheckpoint('model.h5', verbose = 1, save_best_only = True, monitor='val_jacard_coef', mode='max')
 
 
 config = {
@@ -57,22 +67,19 @@ config = {
 
 	'dtype': 'float32',
 
+	'neurons': 64,
+
 	'validation_split': 0.2,
 	'test_split': 0.2,
 
 	'image_max': IMG_MAX_SIZE,
 	'image_size': (IMG_MAX_SIZE, IMG_MAX_SIZE),
-	'image_dimension': (IMG_MAX_SIZE, IMG_MAX_SIZE, 3),
+	'image_dimension': (IMG_MAX_SIZE, IMG_MAX_SIZE, CHANNELS),
 
-	'multiplier': 2,
+	'multiplier': 1,
 
 	'color': {
-		'rgb': {
-			'red': (255, 0, 0),
-			'green': (0, 255, 0),
-			'blue': (0, 0, 255),
-			'black': (0, 0, 0)
-		},
+		'rgb': [(0, 0, 0), (255, 0, 0), (0, 255, 0), (0, 0, 255)],
 		'binary': {
 			'red': [1, 0, 0],
 			'green': [0, 1, 0],
@@ -83,16 +90,19 @@ config = {
 
 	'batch_size': BATCH_SIZE,
 
-	'loss': weighted_categorical_crossentropy(np.array([1,2.5,0.4,1])),#weighted_categorical_crossentropy(np.array([1,1.5,0.5,1])), #weighted_categorical_crossentropy(np.array([1,4,1,1])),#'categorical_crossentropy', #'dice_coef_loss', #'jacard_coef_loss',
-	'metrics': ['accuracy', dice_coef, jacard_coef],
+	'classification': {
+		'loss': weighted_categorical_crossentropy(np.array([1, 2.5, 0.4, 1])),
+		'metrics': ['accuracy', jacard_coef, dice_coef]
+	},
+	'segmentation': {
+		'loss': jacard_coef_loss,
+		'metrics': ['accuracy', jacard_coef, dice_coef]
+	},
+
 	'fit': {
-		'steps_per_epoch': None, #1048//batch_size,
-		'validation_steps': None, #128//batch_size,
 		'epochs': 1,
 		'shuffle': True,
 		'batch_size': BATCH_SIZE,
-		'class_weight': None,  #{0:1, 1:100, 2:1, 3:1}, #None, #(1,1,1,1),
 		'callbacks': [checkpointer], # use checkpointer if you want to save the model
-	},
-	'class_weight': (1,1,1,1)
+	}
 }

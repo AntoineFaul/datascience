@@ -1,6 +1,7 @@
 from PIL import Image
 import numpy as np
 import os
+
 from config import config
 
 
@@ -8,13 +9,21 @@ def make_path(*args):
 	return config['path_sep'].join(args)
 
 def load_image(filename):
-    im = Image.open(filename)
+    img = Image.open(filename)
     # conversion to numpy array
     # each pixels are represented by floating points
-    im = np.array(im, dtype = config['dtype'])
-    im /= 255
+    img = np.array(img, dtype = config['dtype'])
+    img /= 255
 
-    return im
+    return img
+
+def load_images(folder):
+    data = []
+
+    for filename in list_dir(folder):
+        data.append(load_image(make_path(folder, filename)))
+
+    return data
 
 def clean_folder(forlder):
 	# Suppresion of the files inside the output folder
@@ -38,3 +47,17 @@ def remove_except_files(files):
     for file in files:
         if (file in config['except_files']):
             files.remove(file)
+
+def load_imgs():
+    img_train = np.array(load_images(make_path('polyps', 'training', 'data')))
+    img_val = np.array(load_images(make_path('polyps', 'validation', 'data')))
+    img_test = np.array(load_images(make_path('polyps', 'test', 'data')))
+
+    return (img_train, img_val, img_test)
+
+def load_masks():
+    mask_train = np.array(load_images(make_path('polyps', 'training', 'label')))
+    mask_val = np.array(load_images(make_path('polyps', 'validation', 'label')))
+    mask_test = np.array(load_images(make_path('polyps', 'test', 'label')))
+
+    return (mask_train, mask_val, mask_test)

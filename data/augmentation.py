@@ -1,7 +1,8 @@
 import cv2
 import numpy as np
 from random  import choice
-from polyps.file_manager import make_path, clean_subfolders, list_dir
+
+from .manager import make_path, clean_subfolders, list_dir
 from config import config
 
 INPUT_PATH = make_path('polyps', 'origin')

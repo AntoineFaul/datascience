@@ -1,14 +1,16 @@
 from keras.models import Model
-from keras.layers.merge import concatenate
-from keras.layers import Input, BatchNormalization, Dropout, Conv2D, UpSampling2D, MaxPooling2D
-from keras.layers.normalization import BatchNormalization
 from keras.layers.core import Activation
+from keras.layers.merge import concatenate
+from keras.layers import Input, Conv2D, MaxPooling2D, UpSampling2D
+from keras.layers.normalization import BatchNormalization
+from keras.layers import Dropout
 
 from config import config
 
-    
-def u_net(output_channels = 4, act = 'softmax'):
-    inputs = Input(config['image_dimension'])
+
+def u_net():
+    rows, cols, ch = config['image_dimension']
+    inputs = Input((rows, cols, ch))
     neurons = config['neurons']
     
     c1 = Conv2D(neurons, (3, 3), activation = 'relu', padding = 'same') (inputs)
@@ -65,13 +67,9 @@ def u_net(output_channels = 4, act = 'softmax'):
     up_c4 = Conv2D(neurons, (3, 3), activation = 'relu', padding = 'same') (up5)
     up_c4 = BatchNormalization()(up_c4)
     up_c4 = Conv2D(neurons, (3, 3), activation = 'relu', padding = 'same') (up_c4)
-    up_c4 = Dropout(0.4)(up_c4)
+    up_c4 = Dropout(0.2)(up_c4)
     
-    conv_final = Conv2D(output_channels, (1, 1))(up_c4)
-    conv_final = Activation(act)(conv_final)
+    conv_final = Conv2D(ch, (1, 1))(up_c4)
+    conv_final = Activation('sigmoid')(conv_final)
 
-    model = Model(inputs, conv_final)
-
-    return model
-
-
+    return Model(inputs, conv_final)
