@@ -173,7 +173,7 @@ if __name__ == "__main__":
 
     test_name = np.array(load_file_name(fm.make_path('polyps', 'test', 'data', '*.jpg')))
 
-    output = fm.make_path('polyps', 'output','data')
+    output = fm.make_path('polyps', 'output', 'classification')
 
     mask_train = np.array(data_transformation.create_binary_masks(path = fm.make_path('polyps', 'training', 'label')),dtype = "float32") 
     mask_val = np.array(data_transformation.create_binary_masks(path = fm.make_path('polyps', 'validation', 'label')),dtype = "float32") 
