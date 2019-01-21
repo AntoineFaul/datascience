@@ -6,7 +6,7 @@ import tensorflow as tf
 
 
 IMG_MAX_SIZE = 224
-BATCH_SIZE = 64
+BATCH_SIZE = 8
 
 
 def weighted_categorical_crossentropy(weights):
@@ -64,7 +64,7 @@ config = {
 	'image_size': (IMG_MAX_SIZE, IMG_MAX_SIZE),
 	'image_dimension': (IMG_MAX_SIZE, IMG_MAX_SIZE, 3),
 
-	'multiplier': 16,
+	'multiplier': 2,
 
 	'color': {
 		'rgb': {
@@ -88,11 +88,11 @@ config = {
 	'fit': {
 		'steps_per_epoch': None, #1048//batch_size,
 		'validation_steps': None, #128//batch_size,
-		'epochs': 40,
+		'epochs': 1,
 		'shuffle': True,
 		'batch_size': BATCH_SIZE,
 		'class_weight': None,  #{0:1, 1:100, 2:1, 3:1}, #None, #(1,1,1,1),
-		'callbacks': [earlystopper], #, checkpointer], # use checkpointer if you want to save the model
+		'callbacks': [checkpointer], # use checkpointer if you want to save the model
 	},
 	'class_weight': (1,1,1,1)
 }

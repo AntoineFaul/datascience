@@ -110,7 +110,7 @@ def contingency_table(lab_pred,mask_test):
     fp,tp,tn,fn,sum_bg,sum_po,sum_wa,sum_di=(0,0,0,0,0,0,0,0)
     classes = 4
     cont_store = []
-    for j in range(len(test)):
+    for j in range(len(mask_test)):
         for i in range(classes):
             output_binary = np.array(create_binary(lab_pred[j]))*2
             mask_output_comparison = np.subtract(mask_test[j][:,:,i],output_binary[:,:,i])
@@ -121,7 +121,7 @@ def contingency_table(lab_pred,mask_test):
             cont_store.append((fp,tp,tn,fn))
     background,polype,wall,dirt = ([],[],[],[])
     for j in range(classes):
-        for i in range(len(test)):
+        for i in range(len(mask_test)):
             sum_bg += cont_store[i*4][j]
             sum_po += cont_store[i*4+1][j]
             sum_wa += cont_store[i*4+2][j]
@@ -143,7 +143,7 @@ def contingency_table(lab_pred,mask_test):
 
 def overall_contingency_table(lab_pred,mask_test):
     fp,tp,tn,fn =(0,0,0,0)
-    for j in range(len(test)):
+    for j in range(len(mask_test)):
         output_binary = np.array(create_binary(lab_pred[j]))*2
         mask_output_comparison = np.subtract(mask_test[j],output_binary)
         fp += (mask_output_comparison==-2).sum()
@@ -193,11 +193,11 @@ if __name__ == "__main__":
 
     history = history.history
     lab_pred = model.predict(img_test, verbose = 1)
-    evaluate = model.evaluate(x = test, y = mask_test, batch_size = batch_size)
+    evaluate = model.evaluate(x = img_test, y = mask_test, batch_size = batch_size)
     display_im = write_image(merge(lab_pred), output, test_name)
     plt.imshow(display_im[0])#plots the first picture
     plt.show()
-    print("Evaluation : Loss: "+ str(evaluate[0]) + ", Accuracy: " + str(evaluate[1]) + ", Dice Coefficient: " + str(evaluate[2]) + ", Jacard Coefficient: " + str(evaluate[3]))
+  #  print("Evaluation : Loss: "+ str(evaluate[0]) + ", Accuracy: " + str(evaluate[1]) + ", Dice Coefficient: " + str(evaluate[2]) + ", Jacard Coefficient: " + str(evaluate[3]))
     
     overall_contingency_table(lab_pred,mask_test)
     contingency_table(lab_pred,mask_test)
