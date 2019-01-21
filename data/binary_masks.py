@@ -1,3 +1,4 @@
+#this file creates from the colorized images binary versions per class
 import cv2
 import numpy as np
 
@@ -5,7 +6,7 @@ from .manager import make_path, load_image, list_dir
 from config import config
 
 
-def pixelsVerification(picture):
+def pixelsVerification(picture): #check the value of the pixels 
     (rows, cols, channels) = np.shape(picture)
     toReturn = np.empty(shape = (rows, cols, channels))
 
@@ -14,7 +15,7 @@ def pixelsVerification(picture):
 
     return toReturn
         
-def createMask(folderIn, masks):
+def createMask(folderIn, masks):#create the binary masks
     store_im = []
     cpt = 0
 

@@ -1,3 +1,4 @@
+#model file for segmentation
 from keras.models import Model
 from keras.layers.core import Activation
 from keras.layers.merge import concatenate

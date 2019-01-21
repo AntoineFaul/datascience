@@ -1,14 +1,15 @@
-from PIL import Image
+#this file consists the organization functions like creating paths etc.
+from PIL import Image 
 import numpy as np
 import os
 
 from config import config
 
 
-def make_path(*args):
+def make_path(*args):#create an absolute path out of the relative paths
 	return config['path_sep'].join(args)
 
-def load_image(filename):
+def load_image(filename):# load the image and normalize
     img = Image.open(filename)
     # conversion to numpy array
     # each pixels are represented by floating points
@@ -25,13 +26,13 @@ def load_images(folder):
 
     return data
 
-def clean_folder(forlder):
+def clean_folder(folder):
 	# Suppresion of the files inside the output folder
-    fileList = os.listdir(forlder)
+    fileList = os.listdir(folder)
 
     for filename in fileList:
         if (not(filename in config['except_files'])):
-            os.remove(forlder + config['path_sep'] + filename)
+            os.remove(folder + config['path_sep'] + filename)
 
 def clean_subfolders(folder):
     for folder in [make_path(folder, sub_folder) for sub_folder in os.listdir(folder)]:

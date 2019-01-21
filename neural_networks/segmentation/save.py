@@ -1,3 +1,4 @@
+#save the images
 import matplotlib.pyplot as plt
 
 from data.manager import clean_folder, list_dir, make_path

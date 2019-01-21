@@ -1,3 +1,4 @@
+#With this code you can reload a saved model and test it with different images 
 import model
 from keras.models import Model, load_model
 from keras.callbacks import EarlyStopping, ModelCheckpoint
@@ -7,10 +8,9 @@ import glob
 import numpy as np
 from PIL import Image
 from keras.optimizers import Adam
-import random
 
 
-def load_transform_pictures(folder):
+def load_transform_pictures(folder): #loads the images and resizes them and normalizes the pixel value
     x_train = []
 
     for filename in glob.glob(folder):
@@ -19,7 +19,7 @@ def load_transform_pictures(folder):
 
     return(x_train)
 
-def write_image(array, directory):
+def write_image(array, directory): #function for saving the image
     index = 0
 
     for image in array:
@@ -35,7 +35,7 @@ def write_image(array, directory):
 
 
 
-def merge(array):
+def merge(array): #function for creating a binary matrix for saving the picture
     final_images = []
 
     for image in array:
@@ -54,10 +54,10 @@ def merge(array):
     return(final_images)
 
 
-def find_class(c):
+def find_class(c): #find the class with the highest probability
     return c.argmax()
 
-def pixel_class(c):
+def pixel_class(c): #colors for plotting
     if c == 1:
         return(255, 0, 0)
     elif c == 2:

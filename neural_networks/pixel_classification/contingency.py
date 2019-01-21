@@ -1,25 +1,26 @@
-import numpy as np
+#this code creates a confusion matrix for the pixel-wise classification it displays the amount of true positive,
+#false positive, true negative and false negative guessed predictions
+import numpy as np 
 
 
-def create_binary(a, n = 1):
+def create_binary(a,): #the function creates a binary matrix out of the probability table from the output of the pixel-wise classification model
     binary = []
 
     for i in range(len(a)):
     	# a : Input array
-    	# n : We want n-max element position to be set to 1
         
         out = np.zeros_like(a[i])
-        out[np.arange(len(a[i])), np.argpartition(a[i], -n, axis = 1)[:, -n]] = 1
+        out[np.arange(len(a[i])), np.argpartition(a[i], -1, axis = 1)[:, -1]] = 1
         binary.append(out)
 
     return binary
 
-def table(lab_pred, mask_test):
+def table(lab_pred, mask_test): #this function creates the confusion matrix for each class
     fp , tp, tn, fn, sum_bg, sum_po, sum_wa, sum_di = (0, 0, 0, 0, 0, 0, 0, 0)
     cont_store = []
     classes = 4
 
-    for j in range(len(mask_test)):
+    for j in range(len(mask_test)): #this part of the functions counts the amount of fp,tp,fn,tn
         for i in range(classes):
             output_binary = np.array(create_binary(lab_pred[j]))*2
             mask_output_comparison = np.subtract(mask_test[j][:, :, i],output_binary[:, :, i])
@@ -55,7 +56,7 @@ def table(lab_pred, mask_test):
     print("Wall: "+"FP: " + str(round(wall[0], 3)) + " TP: " + str(round(wall[1], 3)) + " TN: " + str(round(wall[2], 3)) +" FN: " + str(round(wall[3], 3)))
     print("Dirt: "+"FP: " + str(round(dirt[0], 3)) + " TP: " + str(round(dirt[1], 3)) + " TN: " + str(round(dirt[2], 3)) +" FN: " + str(round(dirt[3], 3)) + '\n')
 
-def overall_table(lab_pred, mask_test):
+def overall_table(lab_pred, mask_test): #this functions creates an overall confusion matrix for all classes
     fp, tp, tn, fn = (0, 0, 0, 0)
 
     for j in range(len(mask_test)):

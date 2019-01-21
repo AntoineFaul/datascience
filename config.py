@@ -1,3 +1,4 @@
+#this is the main configuration file for the semantic segmentation and the pixel wise classification
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from platform import system as getSystem
 import keras.backend as K
@@ -11,7 +12,7 @@ IMG_MAX_SIZE = 224
 BATCH_SIZE = 8
 
 
-def model_predict(model, img_save, img_test, output_path):
+def model_predict(model, img_save, img_test, output_path): 
     lab_pred = model.predict(img_test, verbose = 1)
     img_save(lab_pred, output_path)
 

@@ -1,3 +1,4 @@
+# this code saves the images and plots them on the basis of the probability matrix.
 import numpy as np
 from PIL import Image
 
