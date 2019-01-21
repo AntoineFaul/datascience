@@ -1,3 +1,5 @@
+import os
+
 from neural_networks.segmentation import train as train_segmentation
 from neural_networks.pixel_classification import train as train_pixel_classification
 from neural_networks.image_classification import train as train_image_classification
@@ -15,46 +17,52 @@ if __name__ == "__main__":
         try:
             c = int(input('Choice = '))
 
-            assert c > 0
-            assert c < 4
+            assert c > 0 and c < 4
 
             cont = False
-            print()
 
+        except KeyboardInterrupt:
+            raise
         except:
             print("\nERROR: Invalid Input.\n")
+        finally:
+            print()
 
     if c == 1:
         train_segmentation.execute(RUN_DATA_AUGMENTATION)
     elif c == 2:
         train_pixel_classification.execute(RUN_DATA_AUGMENTATION)
     else:
-
         cont = True
         c = 0
 
         while (cont):
-            print("\nPlease choose a model to execute:\n\n1 - learnOpenCV_model\n2 - reduced_model\n3 - final_model\n4 - reduced_dropOut_model\n5 - reduced_generator_model")
+            print("\nPlease choose a model to execute:\n\n1 - learnOpenCV_model\n2 - reduced_model\n3 - final_model\n4 - reduced_dropOut_model\n5 - reduced_generator_model\n")
 
             try:
                 c = int(input('Choice = '))
 
-                assert c > 0
-                assert c < 6
+                assert c > 0 and c < 6
 
                 cont = False
-                print()
 
+            except KeyboardInterrupt:
+                raise
             except:
                 print("\nERROR: Invalid Input.\n")
+            finally:
+                print()
 
         if c == 1:
-            train_image_classification.execute("CV")
+            train_image_classification.execute('CV')
         elif c == 2:
-            train_image_classification.execute("RM")
+            train_image_classification.execute('RM')
         elif c == 3:
-            train_image_classification.execute("FM")
+            train_image_classification.execute('FM')
         elif c == 4:
-            train_image_classification.execute("RDM")
+            train_image_classification.execute('RDM')
         elif c == 5:
-            train_image_classification.execute("RGM")
+            train_image_classification.execute('RGM')
+
+    os.system('pause')
+

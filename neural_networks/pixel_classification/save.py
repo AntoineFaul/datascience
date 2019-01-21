@@ -32,7 +32,7 @@ def write_images(lab_pred, output_path):
     clean_folder(output_path)
 
     array = merge(lab_pred)
-    names = list_dir(make_path('polyps', 'test', 'data'))
+    names = list_dir(make_path('polyps_pixel', 'test', 'data'))
     index = 0
 
     for image in array:

@@ -26,13 +26,13 @@ def load_images(folder):
 
     return data
 
-def clean_folder(forlder):
+def clean_folder(folder):
 	# Suppresion of the files inside the output folder
-    fileList = os.listdir(forlder)
+    fileList = os.listdir(folder)
 
     for filename in fileList:
         if (not(filename in config['except_files'])):
-            os.remove(forlder + config['path_sep'] + filename)
+            os.remove(folder + config['path_sep'] + filename)
 
 def clean_subfolders(folder):
     for folder in [make_path(folder, sub_folder) for sub_folder in os.listdir(folder)]:
@@ -50,8 +50,8 @@ def remove_except_files(files):
             files.remove(file)
 
 def load_imgs():
-    img_train = np.array(load_images(make_path('polyps', 'training', 'data')), dtype = config['dtype'])
-    img_val = np.array(load_images(make_path('polyps', 'validation', 'data')), dtype = config['dtype'])
-    img_test = np.array(load_images(make_path('polyps', 'test', 'data')), dtype = config['dtype'])
+    img_train = np.array(load_images(make_path('polyps_pixel', 'training', 'data')), dtype = config['dtype'])
+    img_val = np.array(load_images(make_path('polyps_pixel', 'validation', 'data')), dtype = config['dtype'])
+    img_test = np.array(load_images(make_path('polyps_pixel', 'test', 'data')), dtype = config['dtype'])
 
     return (img_train, img_val, img_test)

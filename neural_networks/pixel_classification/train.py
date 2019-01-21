@@ -8,10 +8,17 @@ from . import contingency
 from .model import u_net
 
 
+<<<<<<< HEAD
 def load_masks(): #load in the mask data
     mask_train = np.array(binary_masks.create(manager.make_path('polyps', 'training', 'label')), dtype = config['dtype']) 
     mask_val = np.array(binary_masks.create(manager.make_path('polyps', 'validation', 'label')), dtype = config['dtype']) 
     mask_test = np.array(binary_masks.create(manager.make_path('polyps', 'test', 'label')), dtype = config['dtype'])
+=======
+def load_masks():
+    mask_train = np.array(binary_masks.create(manager.make_path('polyps_pixel', 'training', 'label')), dtype = config['dtype']) 
+    mask_val = np.array(binary_masks.create(manager.make_path('polyps_pixel', 'validation', 'label')), dtype = config['dtype']) 
+    mask_test = np.array(binary_masks.create(manager.make_path('polyps_pixel', 'test', 'label')), dtype = config['dtype'])
+>>>>>>> 5298e682b06d76acd6bfd042c18ae27190a16ceb
 
     return (mask_train, mask_val, mask_test)
 
@@ -26,7 +33,7 @@ def execute(run_data_augmentation = True): #main function for running the pixel-
     if run_data_augmentation:
         augmentation.execute()
 
-    output_path = manager.make_path('polyps', 'output', 'classification')
+    output_path = manager.make_path('polyps_pixel', 'output', 'classification')
     manager.clean_folder(output_path)
 
     model = u_net()

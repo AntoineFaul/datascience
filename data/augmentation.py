@@ -6,8 +6,10 @@ from random  import choice
 from .manager import make_path, clean_subfolders, list_dir
 from config import config
 
-INPUT_PATH = make_path('polyps', 'origin') #function for creating relative parth
-OUTPUT_PATHS = [make_path('polyps', 'training'), make_path('polyps', 'validation'), make_path('polyps', 'test')] #function for creating relative parth
+
+INPUT_PATH = make_path('polyps_pixel', 'origin')
+OUTPUT_PATHS = [make_path('polyps_pixel', 'training'), make_path('polyps_pixel', 'validation'), make_path('polyps_pixel', 'test')]
+
 
 SUBFOLDERS = list_dir(INPUT_PATH)
 
