@@ -25,13 +25,13 @@ def load_images(folder):
 
     return data
 
-def clean_folder(forlder):
+def clean_folder(folder):
 	# Suppresion of the files inside the output folder
-    fileList = os.listdir(forlder)
+    fileList = os.listdir(folder)
 
     for filename in fileList:
         if (not(filename in config['except_files'])):
-            os.remove(forlder + config['path_sep'] + filename)
+            os.remove(folder + config['path_sep'] + filename)
 
 def clean_subfolders(folder):
     for folder in [make_path(folder, sub_folder) for sub_folder in os.listdir(folder)]:

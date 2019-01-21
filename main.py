@@ -1,3 +1,5 @@
+import os
+
 from neural_networks.segmentation import train as train_segmentation
 from neural_networks.pixel_classification import train as train_pixel_classification
 from neural_networks.image_classification import train as train_image_classification
@@ -31,7 +33,6 @@ if __name__ == "__main__":
     elif c == 2:
         train_pixel_classification.execute(RUN_DATA_AUGMENTATION)
     else:
-
         cont = True
         c = 0
 
@@ -62,3 +63,6 @@ if __name__ == "__main__":
             train_image_classification.execute('RDM')
         elif c == 5:
             train_image_classification.execute('RGM')
+
+    os.system('pause')
+
