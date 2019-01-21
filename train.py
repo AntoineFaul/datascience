@@ -106,6 +106,57 @@ def result_jaccard_coeff(img1, img2):
     img1_t = K.variable(img1)
     img2_t = K.variable(img2)
     return K.eval(jacard_coef(img1_t, img2_t))
+ 
+def contingency_table(lab_pred,mask_test):
+    fp,tp,tn,fn,sum_bg,sum_po,sum_wa,sum_di=(0,0,0,0,0,0,0,0)
+    classes = 4
+    cont_store = []
+    for j in range(len(test)):
+        for i in range(classes):
+            output_binary = np.array(create_binary(lab_pred[j]))*2
+            mask_output_comparison = np.subtract(mask_test[j][:,:,i],output_binary[:,:,i])
+            fp = (mask_output_comparison==-2).sum()
+            tp =(mask_output_comparison==-1).sum()
+            tn =(mask_output_comparison==0).sum()
+            fn =(mask_output_comparison==1).sum()
+            cont_store.append((fp,tp,tn,fn))
+    background,polype,wall,dirt = ([],[],[],[])
+    for j in range(classes):
+        for i in range(len(test)):
+            sum_bg += cont_store[i*4][j]
+            sum_po += cont_store[i*4+1][j]
+            sum_wa += cont_store[i*4+2][j]
+            sum_di += cont_store[i*4+3][j]
+        background.append(sum_bg)
+        polype.append(sum_po)
+        wall.append(sum_wa)
+        dirt.append(sum_di)
+        sum_bg,sum_po,sum_wa,sum_di=(0,0,0,0)
+    background=background/sum(background)
+    polype =polype/sum(polype)
+    wall=wall/sum(wall)
+    dirt=dirt/sum(dirt)
+
+    print("Background: "+"FP: " +str(round(background[0],3))+" TP: "+ str(round(background[1],3)) + " TN: " +str(round(background[2],3))+" FN: " +str(round(background[3],3)))
+    print("Polype: "+"FP: " +str(round(polype[0],3))+" TP: "+ str(round(polype[1],3)) + " TN: " +str(round(polype[2],3))+" FN: " +str(round(polype[3],3)))
+    print("Wall: "+"FP: " +str(round(wall[0],3))+" TP: "+ str(round(wall[1],3)) + " TN: " +str(round(wall[2],3))+" FN: " +str(round(wall[3],3)))
+    print("Dirt: "+"FP: " +str(round(dirt[0],3))+" TP: "+ str(round(dirt[1],3)) + " TN: " +str(round(dirt[2],3))+" FN: " +str(round(dirt[3],3)))
+
+def overall_contingency_table(lab_pred,mask_test):
+    fp,tp,tn,fn =(0,0,0,0)
+    for j in range(len(test)):
+        output_binary = np.array(create_binary(lab_pred[j]))*2
+        mask_output_comparison = np.subtract(mask_test[j],output_binary)
+        fp += (mask_output_comparison==-2).sum()
+        tp +=(mask_output_comparison==-1).sum()
+        tn +=(mask_output_comparison==0).sum()
+        fn +=(mask_output_comparison==1).sum()
+    sum_classses = (fp+tp+tn+fn)
+    fp = fp/ sum_classses
+    tp = tp/sum_classses
+    tn = tn/sum_classses
+    fn = fn/sum_classses
+    print("FP: " +str(round(fp,3))+" TP: "+ str(round(tp,3)) + " TN: " +str(round(tn,3))+" FN: " +str(round(fn,3)))
 
 
 if __name__ == "__main__":
@@ -114,7 +165,7 @@ if __name__ == "__main__":
     batch_size = config['batch_size']
 #    model = model.u_net(IMG_SIZE = config['image_dimension']) #what does the Adam optimizer do
     model = model.u_net_batch_norm_upc()
-    model.compile(optimizer = Adam(lr = 1e-2), loss = config['loss'] , metrics = config['metrics'])#4
+    model.compile(optimizer = Adam(lr = 1e-4), loss = config['loss'] , metrics = config['metrics'])
 
 
     im = np.array(load_transform_pictures(fm.make_path('polyps', 'input', 'data', '*.jpg')))
@@ -139,8 +190,12 @@ if __name__ == "__main__":
 
     history = history.history
     lab_pred = model.predict(test, verbose = 1)
-#    evaluate = model.evaluate(x = test, y = mask_test, batch_size = batch_size)
+    evaluate = model.evaluate(x = test, y = mask_test, batch_size = batch_size)
     display_im = write_image(merge(lab_pred), output, test_name)
     plt.imshow(display_im[0])#plots the first picture
     plt.show()
-    #print("Evaluation : Loss: "+ str(evaluate[0]) + ", Accuracy: " + str(evaluate[1]) + ", Dice Coefficient: " + str(evaluate[2]) + ", Jacard Coefficient: " + str(evaluate[3]))
+    print("Evaluation : Loss: "+ str(evaluate[0]) + ", Accuracy: " + str(evaluate[1]) + ", Dice Coefficient: " + str(evaluate[2]) + ", Jacard Coefficient: " + str(evaluate[3]))
+    
+    overall_contingency_table(lab_pred,mask_test)
+    contingency_table(lab_pred,mask_test)
+    
