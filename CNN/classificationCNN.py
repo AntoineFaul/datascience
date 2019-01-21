@@ -261,6 +261,7 @@ def plot_fullInformation(predictPerCent, history, predict_succes, predict_fails,
     # succes plot
     ax3 = plt.subplot(gs2[:, 0])
     bp = ax3.boxplot(predict_succes, patch_artist=True)
+    ax3.axis([0.75, 1.25, 0.4, 1])
     ax3.set_title(
         'Succes (' + str(round(predictPerCent, 2)) + '%)', fontsize=12)
     ax3.grid(True)
@@ -269,6 +270,7 @@ def plot_fullInformation(predictPerCent, history, predict_succes, predict_fails,
     # fails plot
     ax4 = plt.subplot(gs2[:, 1])
     bp2 = ax4.boxplot(predict_fails, patch_artist=True)
+    ax4.axis([0.75, 1.25, 0.4, 1])
     ax4.set_title(
         'Fails (' + str(round(100 - predictPerCent, 2)) + '%)', fontsize=12)
     ax4.grid(True)
@@ -311,6 +313,6 @@ def plot_fullInformation(predictPerCent, history, predict_succes, predict_fails,
 
     ax6 = plt.subplot(gs3[:, 2])
     ax6.axis('off')
-    ax6.text(0, 0, summary, fontsize=5)
+    ax6.text(0, 1, summary, fontsize=5, verticalalignment='top')
     ax6.set_title('Model summary', fontsize=12,
                   horizontalalignment='left')

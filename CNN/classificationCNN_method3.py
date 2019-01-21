@@ -2,6 +2,7 @@ import numpy as np
 
 import pickle
 import sys
+import os
 
 from keras.utils import to_categorical, print_summary
 from keras.preprocessing.image import ImageDataGenerator
@@ -29,14 +30,14 @@ if __name__ == "__main__":
     # Importation trainning dataSet
     source_dataSet = classCNN.create_data(
         config['folderTrain'], True, config['maxsize'])
-    print("importation of "
-          + str(len(source_dataSet[0])) + " pictures as training data")
+    print("importation of " +
+          str(len(source_dataSet[0])) + " pictures as training data")
 
     # Importation testing dataSet
     test_dataSet = classCNN.create_data(
         config['folderTest'], True, config['maxsize'])
-    print("importation of "
-          + str(len(test_dataSet[0])) + " pictures as test data")
+    print("importation of " +
+          str(len(test_dataSet[0])) + " pictures as test data")
 
     # Creation of the validation dataSet
     (train_dataSet, validation_dataSet) = classCNN.shuffle_fairSplit_data(
@@ -89,9 +90,9 @@ if __name__ == "__main__":
     model1.compile(optimizer=config['compile']['optimizer'],
                    loss=config['compile']['loss'], metrics=config['compile']['metrics'])
     model1.summary()
-    
+
     # Open the file
-    with open(fm.make_path(config['folderModel'], config['nameModel']+'.txt'),'w') as fh:
+    with open(fm.make_path(config['folderModel'], config['nameModel'] + '.txt'), 'w') as fh:
         # Pass the file handle in as a lambda function to make it callable
         model1.summary(print_fn=lambda x: fh.write(x + '\n'))
 
@@ -100,14 +101,26 @@ if __name__ == "__main__":
     print("Hit a key to train the model ...")
     input()
 
-    callBacks = callbacks.EarlyStopping(
-        monitor=config['callbacks']['monitor'],
-        min_delta=config['callbacks']['min_delta'],
-        patience=config['callbacks']['patience'],
-        verbose=config['callbacks']['verbose'],
-        mode=config['callbacks']['mode'],
-        baseline=config['callbacks']['baseline'],
-        restore_best_weights=config['callbacks']['restore'])
+    callBacks1 = callbacks.EarlyStopping(
+        monitor=config['callbacks1']['monitor'],
+        min_delta=config['callbacks1']['min_delta'],
+        patience=config['callbacks1']['patience'],
+        verbose=config['callbacks1']['verbose'],
+        mode=config['callbacks1']['mode'],
+        baseline=config['callbacks1']['baseline'],
+        restore_best_weights=config['callbacks1']['restore'])
+
+    callBacks2 = callbacks.EarlyStopping(
+        monitor=config['callbacks2']['monitor'],
+        min_delta=config['callbacks2']['min_delta'],
+        patience=config['callbacks2']['patience'],
+        verbose=config['callbacks2']['verbose'],
+        mode=config['callbacks2']['mode'],
+        baseline=config['callbacks2']['baseline'],
+        restore_best_weights=config['callbacks2']['restore'])
+
+    if(config['fit']['callbacks'] == 1):
+         print(callBacks1.monitor)
 
     generator = ImageDataGenerator(
         rotation_range=config['generator']['rotation'],
@@ -130,16 +143,18 @@ if __name__ == "__main__":
             validation_data=(
                 validation_data, validation_labels_one_hot),
             workers=4,
-            callbacks=[callBacks] if config['fit']['callbacks'] == 'callbacks' else None)
+            shuffle=config['fit']['shuffle'],
+            callbacks=[callBacks1] if config['fit']['callbacks'] == 1 else [callBacks1, callBacks2] if config['fit']['callbacks'] == 2 else None)
     else:
         print("Fit without a generator")
         history1 = model1.fit(train_data, train_labels_one_hot,
                               batch_size=config['fit']['batch_size'],
                               epochs=config['fit']['epochs'],
                               verbose=config['fit']['verbose'],
+                              shuffle=config['fit']['shuffle'],
                               validation_data=(
                                   validation_data, validation_labels_one_hot),
-                              callbacks=[callBacks] if config['fit']['callbacks'] == 'callbacks' else None)
+                              callbacks=[callBacks1] if config['fit']['callbacks'] == 1 else [callBacks1, callBacks2] if config['fit']['callbacks'] == 2 else None)
 
 # %%
 
@@ -155,8 +170,8 @@ if __name__ == "__main__":
     A = [not i for i in A[:]]
     predict_fails = predict[A, predict_class[A]]
 
-    succes = (len(predict_succes)
-              / (len(predict_succes) + len(predict_fails)) * 100)
+    succes = (len(predict_succes) /
+              (len(predict_succes) + len(predict_fails)) * 100)
     print('Prediction : ' + str(succes) + '%')
 
     # Analysis of the true and false result
@@ -177,21 +192,25 @@ if __name__ == "__main__":
 
 # %%
 
+    # folder preparation
+    if not os.path.exists(fm.make_path(config['folderModel'], config['nameModel'])):
+        os.makedirs(fm.make_path(config['folderModel'], config['nameModel']))
+
     # serialize model to JSON
     model_json = model1.to_json()
-    with open(fm.make_path(config['folderModel'], config['nameModel'] + ".json"), "w") as json_file:
+    with open(fm.make_path(config['folderModel'], config['nameModel'], config['nameModel'] + ".json"), "w") as json_file:
         json_file.write(model_json)
 
     # serialize weights to HDF5
     model1.save_weights(fm.make_path(
-        config['folderModel'], config['nameModel'] + ".h5"))
+        config['folderModel'], config['nameModel'], config['nameModel'] + ".h5"))
     print("Saved model to disk")
 
     # save the history model
-    with open(fm.make_path(config['folderModel'], config['nameModel'] + ".pkl"), 'wb') as output:
+    with open(fm.make_path(config['folderModel'], config['nameModel'], config['nameModel'] + ".pkl"), 'wb') as output:
         pickle.dump(history1, output, pickle.HIGHEST_PROTOCOL)
 
     # save the plot of the full informations
     fig = plt.figure(3)
     fig.savefig(fm.make_path(
-        config['folderModel'], config['nameModel'] + ".png"))
+        config['folderModel'], config['nameModel'], config['nameModel'] + ".png"))

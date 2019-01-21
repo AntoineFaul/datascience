@@ -6,6 +6,10 @@ import polyps.file_manager as fm
 # CV    -> learnOpenCV_model
 # V2    -> defaultV2_model
 # V3    -> defaultV3_model
+# V3C   -> defaultV3_callbacks_model
+# V3S   -> defaultV3_shuffle_model
+# V4    -> defaultV4_model
+# V5    -> defaultV5_model
 
 
 def getConfig(name):
@@ -19,6 +23,14 @@ def getConfig(name):
         return defaultV2_model
     if name == "V3":
         return defaultV3_model
+    if name == "V3C":
+        return defaultV3_callbacks_model
+    if name == "V3S":
+        return defaultV3_shuffle_model
+    if name == "V4":
+        return defaultV4_model
+    if name == "V5":
+        return defaultV5_model
     return default_model
 
 
@@ -333,21 +345,21 @@ defaultV3_model = {
         {'index': 'Conv2D', 'filters': 5,
             'kernel_size': (5, 5), 'padding': 'same', 'activation': 'relu', 'shape': 'shape'},
         {'index': 'MaxPooling2D', 'pool_size': (2, 2)},
-        {'index': 'Dropout', 'rate': 0.25}
+        {'index': 'Dropout', 'rate': 0.1},
 
         {'index': 'Conv2D', 'filters': 5,
             'kernel_size': (3, 3), 'padding': 'same', 'activation': 'relu', 'shape': None},
         {'index': 'MaxPooling2D', 'pool_size': (2, 2)},
-        {'index': 'Dropout', 'rate': 0.25}
+        {'index': 'Dropout', 'rate': 0.1},
 
         {'index': 'Conv2D', 'filters': 5,
             'kernel_size': (3, 3), 'padding': 'same', 'activation': 'relu', 'shape': None},
         {'index': 'MaxPooling2D', 'pool_size': (2, 2)},
-        {'index': 'Dropout', 'rate': 0.25}
+        {'index': 'Dropout', 'rate': 0.1},
 
         {'index': 'Flatten'},
         {'index': 'Dense', 'units': 5, 'activation': 'relu'},
-        {'index': 'Dropout', 'rate': 0.5}
+        {'index': 'Dropout', 'rate': 0.25},
         {'index': 'Dense', 'units': 2, 'activation': 'softmax'}
     ],
 
@@ -385,5 +397,340 @@ defaultV3_model = {
         'verbose': 1,
         'generator': None,  # 'generator',  # None
         'callbacks': None,  # 'callbacks', # None
+    },
+}
+
+defaultV3_callbacks_model = {
+    'path_sep': '\\' if getSystem() == 'Windows' else '/',
+
+    # Input
+    'folderTest': fm.make_path("polyps", "cnn_dataAugmented", "TestAugmented"),
+    'folderTrain': fm.make_path("polyps", "cnn_dataAugmented", "Train"),
+
+    # Ouptut
+    'folderModel': fm.make_path("CNN", "modelSave"),
+    'nameModel': "modelV3_callbacks",
+
+    # DataSet loading
+    'maxsize': (64, 64),
+    'perCent_Test': 0.2,
+    'perCent_Validation': 0.2,
+
+    'model': [
+        {'index': 'Conv2D', 'filters': 5,
+            'kernel_size': (5, 5), 'padding': 'same', 'activation': 'relu', 'shape': 'shape'},
+        {'index': 'MaxPooling2D', 'pool_size': (2, 2)},
+        {'index': 'Dropout', 'rate': 0.1},
+
+        {'index': 'Conv2D', 'filters': 5,
+            'kernel_size': (3, 3), 'padding': 'same', 'activation': 'relu', 'shape': None},
+        {'index': 'MaxPooling2D', 'pool_size': (2, 2)},
+        {'index': 'Dropout', 'rate': 0.1},
+
+        {'index': 'Conv2D', 'filters': 5,
+            'kernel_size': (3, 3), 'padding': 'same', 'activation': 'relu', 'shape': None},
+        {'index': 'MaxPooling2D', 'pool_size': (2, 2)},
+        {'index': 'Dropout', 'rate': 0.1},
+
+        {'index': 'Flatten'},
+        {'index': 'Dense', 'units': 5, 'activation': 'relu'},
+        {'index': 'Dropout', 'rate': 0.25},
+        {'index': 'Dense', 'units': 2, 'activation': 'softmax'}
+    ],
+
+    'compile': {
+        'optimizer': 'rmsprop',
+        'loss': 'categorical_crossentropy',
+        'metrics': ['accuracy'],
+    },
+
+    'callbacks1': {
+        'monitor': 'val_acc',
+        'min_delta': -0.25,
+        'patience': 2,
+        'verbose': 1,
+        'mode': 'auto',  # 'max'
+        'baseline': None,
+        'restore': False,
+    },
+
+    'callbacks2': {
+        'monitor': 'val_acc',
+        'min_delta': 0,
+        'patience': 1,
+        'verbose': 1,
+        'mode': 'auto',  # 'max'
+        'baseline': None,
+        'restore': False,
+    },
+
+    # Generator used during the trainning
+    'generator': {
+        'rotation': 0,  # Degree range for random rotations
+        'zoom': 0.0,  # (0.8, 1) # Range for random zoom (<1 : zoom in)
+        'width_shift': 0.0,  # 0.01 # shift by fraction of total width
+        'height_shift': 0.0,  # 0.01 # shift by fraction of total height
+        'brightness': None,
+        # (0.75, 1.25), # Range for random modification of the brightness
+        'horizontal_flip': True,  # randomly flip images
+        'vertical_flip': True,  # randomly flip images
+    },
+
+    'fit': {
+        'batch_size': 224,
+        'epochs': 100,
+        'verbose': 1,
+        'generator': None,  # 'generator',  # None
+        'callbacks': 2,  # None
+        'suffle': False,  # None (n)
+    },
+}
+
+defaultV3_shuffle_model = {
+    'path_sep': '\\' if getSystem() == 'Windows' else '/',
+
+    # Input
+    'folderTest': fm.make_path("polyps", "cnn_dataAugmented", "TestAugmented"),
+    'folderTrain': fm.make_path("polyps", "cnn_dataAugmented", "Train"),
+
+    # Ouptut
+    'folderModel': fm.make_path("CNN", "modelSave"),
+    'nameModel': "modelV3_shuffle",
+
+    # DataSet loading
+    'maxsize': (64, 64),
+    'perCent_Test': 0.2,
+    'perCent_Validation': 0.2,
+
+    'model': [
+        {'index': 'Conv2D', 'filters': 5,
+            'kernel_size': (5, 5), 'padding': 'same', 'activation': 'relu', 'shape': 'shape'},
+        {'index': 'MaxPooling2D', 'pool_size': (2, 2)},
+        {'index': 'Dropout', 'rate': 0.1},
+
+        {'index': 'Conv2D', 'filters': 5,
+            'kernel_size': (3, 3), 'padding': 'same', 'activation': 'relu', 'shape': None},
+        {'index': 'MaxPooling2D', 'pool_size': (2, 2)},
+        {'index': 'Dropout', 'rate': 0.1},
+
+        {'index': 'Conv2D', 'filters': 5,
+            'kernel_size': (3, 3), 'padding': 'same', 'activation': 'relu', 'shape': None},
+        {'index': 'MaxPooling2D', 'pool_size': (2, 2)},
+        {'index': 'Dropout', 'rate': 0.1},
+
+        {'index': 'Flatten'},
+        {'index': 'Dense', 'units': 5, 'activation': 'relu'},
+        {'index': 'Dropout', 'rate': 0.25},
+        {'index': 'Dense', 'units': 2, 'activation': 'softmax'}
+    ],
+
+    'compile': {
+        'optimizer': 'rmsprop',
+        'loss': 'categorical_crossentropy',
+        'metrics': ['accuracy'],
+    },
+
+    'callbacks1': {
+        'monitor': 'val_acc',
+        'min_delta': -0.25,
+        'patience': 2,
+        'verbose': 1,
+        'mode': 'auto',  # 'max'
+        'baseline': None,
+        'restore': False,
+    },
+
+    'callbacks2': {
+        'monitor': 'val_acc',
+        'min_delta': 0,
+        'patience': 1,
+        'verbose': 1,
+        'mode': 'auto',  # 'max'
+        'baseline': None,
+        'restore': False,
+    },
+
+    # Generator used during the trainning
+    'generator': {
+        'rotation': 0,  # Degree range for random rotations
+        'zoom': 0.0,  # (0.8, 1) # Range for random zoom (<1 : zoom in)
+        'width_shift': 0.0,  # 0.01 # shift by fraction of total width
+        'height_shift': 0.0,  # 0.01 # shift by fraction of total height
+        'brightness': None,
+        # (0.75, 1.25), # Range for random modification of the brightness
+        'horizontal_flip': True,  # randomly flip images
+        'vertical_flip': True,  # randomly flip images
+    },
+
+    'fit': {
+        'batch_size': 224,
+        'epochs': 100,
+        'verbose': 1,
+        'generator': None,  # 'generator',  # None
+        'callbacks': None,  # None, 1 or 2
+        'shuffle': False,  # True or False
+    },
+}
+
+defaultV4_model = {
+    'path_sep': '\\' if getSystem() == 'Windows' else '/',
+
+    # Input
+    'folderTest': fm.make_path("polyps", "cnn_dataAugmented", "TestAugmented"),
+    'folderTrain': fm.make_path("polyps", "cnn_dataAugmented", "Train"),
+
+    # Ouptut
+    'folderModel': fm.make_path("CNN", "modelSave"),
+    'nameModel': "modelV4",
+
+    # DataSet loading
+    'maxsize': (64, 64),
+    'perCent_Test': 0.2,
+    'perCent_Validation': 0.2,
+
+    'model': [
+        {'index': 'Conv2D', 'filters': 5,
+            'kernel_size': (5, 5), 'padding': 'same', 'activation': 'relu', 'shape': 'shape'},
+        {'index': 'MaxPooling2D', 'pool_size': (2, 2)},
+        {'index': 'Dropout', 'rate': 0.05},
+
+        {'index': 'Conv2D', 'filters': 5,
+            'kernel_size': (3, 3), 'padding': 'same', 'activation': 'relu', 'shape': None},
+        {'index': 'MaxPooling2D', 'pool_size': (2, 2)},
+        {'index': 'Dropout', 'rate': 0.05},
+
+        {'index': 'Conv2D', 'filters': 5,
+            'kernel_size': (3, 3), 'padding': 'same', 'activation': 'relu', 'shape': None},
+        {'index': 'MaxPooling2D', 'pool_size': (2, 2)},
+        {'index': 'Dropout', 'rate': 0.05},
+
+        {'index': 'Flatten'},
+        {'index': 'Dense', 'units': 5, 'activation': 'relu'},
+        {'index': 'Dropout', 'rate': 0.1},
+        {'index': 'Dense', 'units': 2, 'activation': 'sigmoid'}
+    ],
+
+    'compile': {
+        'optimizer': 'rmsprop',
+        'loss': 'categorical_crossentropy',
+        'metrics': ['accuracy'],
+    },
+
+    'callbacks1': {
+        'monitor': 'val_acc',
+        'min_delta': -0.25,
+        'patience': 2,
+        'verbose': 1,
+        'mode': 'auto',  # 'max'
+        'baseline': None,
+        'restore': False,
+    },
+
+    'callbacks2': {
+        'monitor': 'val_acc',
+        'min_delta': 0,
+        'patience': 1,
+        'verbose': 1,
+        'mode': 'auto',  # 'max'
+        'baseline': None,
+        'restore': False,
+    },
+
+    # Generator used during the trainning
+    'generator': {
+        'rotation': 0,  # Degree range for random rotations
+        'zoom': 0.0,  # (0.8, 1) # Range for random zoom (<1 : zoom in)
+        'width_shift': 0.0,  # 0.01 # shift by fraction of total width
+        'height_shift': 0.0,  # 0.01 # shift by fraction of total height
+        'brightness': None,
+        # (0.75, 1.25), # Range for random modification of the brightness
+        'horizontal_flip': True,  # randomly flip images
+        'vertical_flip': True,  # randomly flip images
+    },
+
+    'fit': {
+        'batch_size': 224,
+        'epochs': 100,
+        'verbose': 1,
+        'generator': None,  # 'generator',  # None
+        'callbacks': None,  # None, 1 or 2
+        'shuffle': False,  # True or False
+    },
+}
+
+defaultV5_model = {
+    'path_sep': '\\' if getSystem() == 'Windows' else '/',
+
+    # Input
+    'folderTest': fm.make_path("polyps", "cnn_dataAugmented", "TestAugmented"),
+    'folderTrain': fm.make_path("polyps", "cnn_dataAugmented", "Train"),
+
+    # Ouptut
+    'folderModel': fm.make_path("CNN", "modelSave"),
+    'nameModel': "modelV5",
+
+    # DataSet loading
+    'maxsize': (64, 64),
+    'perCent_Test': 0.2,
+    'perCent_Validation': 0.2,
+
+    'model': [
+        {'index': 'Conv2D', 'filters': 3,
+            'kernel_size': (3, 3), 'padding': 'same', 'activation': 'relu', 'shape': 'shape'},
+        {'index': 'MaxPooling2D', 'pool_size': (2, 2)},
+
+        # {'index': 'Conv2D', 'filters': 3,
+        #    'kernel_size': (3, 3), 'padding': 'same', 'activation': 'relu', 'shape': None},
+        #{'index': 'MaxPooling2D', 'pool_size': (2, 2)},
+
+        {'index': 'Flatten'},
+        {'index': 'Dense', 'units': 2, 'activation': 'softmax'}
+    ],
+
+    'compile': {
+        'optimizer': 'rmsprop',
+        'loss': 'categorical_crossentropy',
+        'metrics': ['accuracy'],
+    },
+
+    'callbacks1': {
+        'monitor': 'val_acc',
+        'min_delta': -0.25,
+        'patience': 1,
+        'verbose': 2,
+        'mode': 'auto',  # 'max'
+        'baseline': 0.8,
+        'restore': False,
+    },
+
+    'callbacks2': {
+        'monitor': 'val_acc',
+        'min_delta': 0,
+        'patience': 250,
+        'verbose': 1,
+        'mode': 'auto',  # 'max'
+        'baseline': None,
+        'restore': False,
+    },
+
+    # Generator used during the trainning
+    'generator': {
+        'rotation': 0,  # Degree range for random rotations
+        'zoom': 0.0,  # (0.8, 1) # Range for random zoom (<1 : zoom in)
+        'width_shift': 0.0,  # 0.01 # shift by fraction of total width
+        'height_shift': 0.0,  # 0.01 # shift by fraction of total height
+        'brightness': None,
+        # (0.75, 1.25), # Range for random modification of the brightness
+        'horizontal_flip': True,  # randomly flip images
+        'vertical_flip': True,  # randomly flip images
+    },
+
+    'fit': {
+        'batch_size': 224,
+        'epochs': 40,
+        'verbose': 1,
+        'generator': None,  # 'generator',  # None
+        'callbacks': None,  # None, 1 or 2
+        'shuffle': False,  # True or False
     },
 }
