@@ -162,7 +162,7 @@ if __name__ == "__main__":
     data_augmentation.execute()
 
     batch_size = config['batch_size']
-#    model = model.u_net(IMG_SIZE = config['image_dimension']) #what does the Adam optimizer do
+    #model = model.u_net(IMG_SIZE = config['image_dimension']) #what does the Adam optimizer do
     model = model.u_net_batch_norm_upc()
     model.compile(optimizer = Adam(lr = 1e-4), loss = config['loss'] , metrics = config['metrics'])
 
@@ -193,7 +193,7 @@ if __name__ == "__main__":
 
     history = history.history
     lab_pred = model.predict(img_test, verbose = 1)
-#    evaluate = model.evaluate(x = test, y = mask_test, batch_size = batch_size)
+    evaluate = model.evaluate(x = test, y = mask_test, batch_size = batch_size)
     display_im = write_image(merge(lab_pred), output, test_name)
     plt.imshow(display_im[0])#plots the first picture
     plt.show()

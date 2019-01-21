@@ -1,8 +1,7 @@
-from platform import system as getSystem
-from polyps.file_manager import make_path, load_image, clean_folder, list_dir
-import numpy as np
 import cv2
 import glob
+import numpy as np
+from polyps.file_manager import make_path, load_image, clean_folder, list_dir
 from config import config
 
 
@@ -15,36 +14,22 @@ def pixelsVerification(picture):
 
     return toReturn
         
-def createMask(folderIn, folderOut, masks, masks_namesPrefixe = None):
-    # Suppresion of the files inside the output folder
-    clean_folder(folderOut)
-    names = list_dir(folderIn)
-
-    # Configuration of the output files prefixes
-    if masks_namesPrefixe and len(masks) == len(masks_namesPrefixe):
-        prefixes = masks_namesPrefixe
-    else:
-        prefixes = [str(i) for i in range(len(masks))]
-
+def createMask(folderIn, masks):
     store_im = []
     cpt = 0
 
-    for filename in glob.glob(make_path(folderIn, '*.jpg')):
+    for filename in [make_path(folderIn, name) for name in list_dir(folderIn)]:
         picture = pixelsVerification(load_image(filename))
-        
+
         for i in range(len(masks)):
-            imOut = cv2.inRange(picture, masks[i], masks[i])
-            cv2.imwrite(make_path(folderOut, prefixes[i] + '_' + names[cpt]), imOut)
-            store_im.append(imOut/255)
+            store_im.append(cv2.inRange(picture, masks[i], masks[i]) / 255)
 
         print("\rPicture - " + str(cpt), end = '')
         cpt += 1
 
-    return(store_im)
+    return store_im
  
 def create_binary_masks(path):
-    fileOut = make_path('polyps', 'output', 'label')
-
     print("\rCreate Binary Masks from folder: " + path)
     
     # mask to create 
@@ -54,11 +39,8 @@ def create_binary_masks(path):
                         config['color']['binary']['blue']])
 
     # create the pictures
-    # if the masks_namesPrefixe is not define, the prefix of the pictures will
-    # be the index of the mask in the Array masks
-    # /!\ All of files of the Output folder will be delete before.
-    plop = createMask(folderIn = path, folderOut = fileOut, masks = masks)
+    plop = createMask(folderIn = path, masks = masks)
     chunks = [np.swapaxes(np.array(plop[x:x+4]), 0, 2) for x in range(0, len(plop), 4)]  
 
     print("\rDone. (Nb = " + str(len(chunks)) + ")\n")
-    return(chunks)
+    return chunks
