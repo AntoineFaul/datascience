@@ -8,7 +8,6 @@ from keras import backend as K
 import glob
 import model
 from config import config
-from sklearn.metrics import confusion_matrix
 
 
 def load_transform_pictures(folder):
@@ -117,17 +116,21 @@ if __name__ == "__main__":
     model.compile(optimizer = Adam(lr = 1e-2), loss = config['loss'] , metrics = config['metrics'])#4
 
 
-    im = np.array(load_transform_pictures(fm.make_path('polyps', 'input', 'data', '*.jpg')))
-    test = np.array(load_transform_pictures(fm.make_path('polyps', 'test','data', '*.jpg')))
+    img_train = np.array(load_transform_pictures(fm.make_path('polyps', 'training', 'data', '*.jpg')))
+    img_val = np.array(load_transform_pictures(fm.make_path('polyps', 'validation', 'data', '*.jpg')))
+    img_test = np.array(load_transform_pictures(fm.make_path('polyps', 'test','data', '*.jpg')))
+
     test_name = np.array(load_file_name(fm.make_path('polyps', 'test', 'data', '*.jpg')))
+
     output = fm.make_path('polyps', 'output','data')
-    path = fm.make_path('polyps', 'input', 'label')
-    path_test = fm.make_path('polyps', 'test', 'label')
-    mask = np.array(data_transformation.create_binary_masks(path = path),dtype = "float32") 
-    mask_test = np.array(data_transformation.create_binary_masks(path = path_test),dtype = "float32")
+
+    mask_train = np.array(data_transformation.create_binary_masks(path = fm.make_path('polyps', 'training', 'label')),dtype = "float32") 
+    mask_val = np.array(data_transformation.create_binary_masks(path = fm.make_path('polyps', 'validation', 'label')),dtype = "float32") 
+    mask_test = np.array(data_transformation.create_binary_masks(path = fm.make_path('polyps', 'test', 'label')),dtype = "float32")
   
-    history = model.fit(x = im, y = mask,
-                        validation_split = config['validation_split'],
+    history = model.fit(x = img_train, y = mask_train,
+                        #validation_split = config['validation_split'],
+                        validation_data = (img_val, mask_val),
                         steps_per_epoch = config['fit']['steps_per_epoch'],
                         validation_steps = config['fit']['validation_steps'],
                         epochs = config['fit']['epochs'],
@@ -138,7 +141,7 @@ if __name__ == "__main__":
                     )
 
     history = history.history
-    lab_pred = model.predict(test, verbose = 1)
+    lab_pred = model.predict(img_test, verbose = 1)
 #    evaluate = model.evaluate(x = test, y = mask_test, batch_size = batch_size)
     display_im = write_image(merge(lab_pred), output, test_name)
     plt.imshow(display_im[0])#plots the first picture

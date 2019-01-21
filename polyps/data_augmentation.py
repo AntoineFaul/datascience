@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from config import config
 
 INPUT_PATH = make_path('polyps', 'origin')
-OUTPUT_PATHS = [make_path('polyps', 'input'), make_path('polyps', 'test')]
+OUTPUT_PATHS = [make_path('polyps', 'training'), make_path('polyps', 'validation'), make_path('polyps', 'test')]
 
 SUBFOLDERS = os.listdir(INPUT_PATH)
 
@@ -33,18 +33,24 @@ def rotate(img, rot):
 
     return dst
 
-def test_split():
+def split(input_list, perc):
+    split_list = []
+
+    for i in range(int(len(input_list)*perc)):
+        im = choice(input_list)
+        split_list.append(im)
+        input_list.remove(im)
+
+    return (input_list, split_list)
+
+def split_data():
     input_list = os.listdir(make_path(INPUT_PATH, SUBFOLDERS[0]))
     remove_except_files(input_list)
 
-    test_list = []
-
-    for i in range(int(len(input_list)*config['test_split'])):
-        im = choice(input_list)
-        test_list.append(im)
-        input_list.remove(im)
-
-    return [input_list, test_list]
+    (train_val_list, test_list) = split(input_list, config['test_split'])
+    (training_list, validation_list) = split(train_val_list, config['validation_split'])
+    
+    return [training_list, validation_list, test_list]
 
 def execute():
     print("\nData Augmentation:\n")
@@ -53,9 +59,11 @@ def execute():
         print("Clean folder: " + output_path)
         clean_subfolders(output_path)
 
-    lists = test_split()
+    lists = split_data()
 
-    print("\nData set % for testing: " + str(config['test_split']*100) + " %")
+    print("\nData set % for training:\t" + str(round((1 - config['test_split'] - (config['validation_split']*(1 - config['test_split'])))*100, 2)) + " %")
+    print("Data set % for validation:\t" + str(round((config['validation_split']*(1 - config['test_split']))*100, 2)) + " %")
+    print("Data set % for testing:   \t" + str(config['test_split']*100) + " %")
 
     for i in range(len(OUTPUT_PATHS)):
         print()
