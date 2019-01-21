@@ -28,6 +28,12 @@ def clean_subfolders(folder):
     for folder in [make_path(folder, sub_folder) for sub_folder in os.listdir(folder)]:
         clean_folder(folder)
 
+def list_dir(folder):
+    file_list = os.listdir(folder)
+    remove_except_files(file_list)
+
+    return file_list
+
 def remove_except_files(files):
     for file in files:
         if (file in config['except_files']):

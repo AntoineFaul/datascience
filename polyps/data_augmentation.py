@@ -1,15 +1,13 @@
-import os
 import cv2
 import numpy as np
 from random  import choice
-from polyps.file_manager import make_path, clean_subfolders, remove_except_files
-import matplotlib.pyplot as plt
+from polyps.file_manager import make_path, clean_subfolders, list_dir
 from config import config
 
 INPUT_PATH = make_path('polyps', 'origin')
 OUTPUT_PATHS = [make_path('polyps', 'training'), make_path('polyps', 'validation'), make_path('polyps', 'test')]
 
-SUBFOLDERS = os.listdir(INPUT_PATH)
+SUBFOLDERS = list_dir(INPUT_PATH)
 
 
 def rotate(img, rot):
@@ -44,13 +42,21 @@ def split(input_list, perc):
     return (input_list, split_list)
 
 def split_data():
-    input_list = os.listdir(make_path(INPUT_PATH, SUBFOLDERS[0]))
-    remove_except_files(input_list)
+    input_list = list_dir(make_path(INPUT_PATH, SUBFOLDERS[0]))
 
     (train_val_list, test_list) = split(input_list, config['test_split'])
     (training_list, validation_list) = split(train_val_list, config['validation_split'])
     
     return [training_list, validation_list, test_list]
+
+def print_split_perc():
+    split_test_perc = config['test_split']*100
+    split_val_perc = round(config['validation_split'] * (100 - split_test_perc), 2)
+
+    print("\nData set % for training:\t" + str(100 - split_val_perc - split_test_perc) + " %")
+    print("Data set % for validation:\t" + str(split_val_perc) + " %")
+    print("Data set % for testing:   \t" + str(split_test_perc) + " %")
+
 
 def execute():
     print("\nData Augmentation:\n")
@@ -59,11 +65,8 @@ def execute():
         print("Clean folder: " + output_path)
         clean_subfolders(output_path)
 
+    print_split_perc()
     lists = split_data()
-
-    print("\nData set % for training:\t" + str(round((1 - config['test_split'] - (config['validation_split']*(1 - config['test_split'])))*100, 2)) + " %")
-    print("Data set % for validation:\t" + str(round((config['validation_split']*(1 - config['test_split']))*100, 2)) + " %")
-    print("Data set % for testing:   \t" + str(config['test_split']*100) + " %")
 
     for i in range(len(OUTPUT_PATHS)):
         print()

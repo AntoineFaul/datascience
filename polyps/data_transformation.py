@@ -1,10 +1,8 @@
 from platform import system as getSystem
-from polyps.file_manager import make_path, load_image, clean_folder, remove_except_files
-import cv2 as cv
-from PIL import Image
+from polyps.file_manager import make_path, load_image, clean_folder, list_dir
 import numpy as np
+import cv2
 import glob
-import os
 from config import config
 
 
@@ -13,15 +11,14 @@ def pixelsVerification(picture):
     toReturn = np.empty(shape = (rows, cols, channels))
 
     for i in range(channels):
-        plop, toReturn[:, :, i] = cv.threshold(picture[:, :, i], 0.5, 1, cv.THRESH_BINARY)
+        plop, toReturn[:, :, i] = cv2.threshold(picture[:, :, i], 0.5, 1, cv2.THRESH_BINARY)
 
     return toReturn
         
 def createMask(folderIn, folderOut, masks, masks_namesPrefixe = None):
     # Suppresion of the files inside the output folder
     clean_folder(folderOut)
-    names = os.listdir(folderIn)
-    remove_except_files(names)
+    names = list_dir(folderIn)
 
     # Configuration of the output files prefixes
     if masks_namesPrefixe and len(masks) == len(masks_namesPrefixe):
@@ -36,8 +33,8 @@ def createMask(folderIn, folderOut, masks, masks_namesPrefixe = None):
         picture = pixelsVerification(load_image(filename))
         
         for i in range(len(masks)):
-            imOut = cv.inRange(picture, masks[i], masks[i])
-            cv.imwrite(make_path(folderOut, prefixes[i] + '_' + names[cpt]), imOut)
+            imOut = cv2.inRange(picture, masks[i], masks[i])
+            cv2.imwrite(make_path(folderOut, prefixes[i] + '_' + names[cpt]), imOut)
             store_im.append(imOut/255)
 
         print("\rPicture - " + str(cpt), end = '')
