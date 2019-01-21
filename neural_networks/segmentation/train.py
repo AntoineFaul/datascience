@@ -1,3 +1,4 @@
+#main function of segmentation for setting and starting the training
 import cv2
 import numpy as np
 from matplotlib.pyplot import imsave
@@ -9,7 +10,7 @@ from data import augmentation, manager
 from config import config, model_evaluate, model_predict
 
 
-def load_masks():
+def load_masks(): #load mask images
     mask_train = np.array(manager.load_images(manager.make_path('polyps', 'training', 'label')), dtype = config['dtype'])
     mask_val = np.array(manager.load_images(manager.make_path('polyps', 'validation', 'label')), dtype = config['dtype'])
     mask_test = np.array(manager.load_images(manager.make_path('polyps', 'test', 'label')), dtype = config['dtype'])

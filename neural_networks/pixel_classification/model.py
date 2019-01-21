@@ -1,3 +1,4 @@
+#this file defines the CNN model we are using for training
 from keras.models import Model
 from keras.layers.merge import concatenate
 from keras.layers import Input, BatchNormalization, Dropout, Conv2D, UpSampling2D, MaxPooling2D
@@ -7,7 +8,7 @@ from keras.layers.core import Activation
 from config import config
 
     
-def u_net(output_channels = 4, act = 'softmax'):
+def u_net(output_channels = 4, act = 'softmax'): 
     inputs = Input(config['image_dimension'])
     neurons = config['neurons']
     

@@ -1,3 +1,4 @@
+# this file augments the data for semantic segmentation and pixel-wise classification
 import cv2
 import numpy as np
 from random  import choice
@@ -5,13 +6,13 @@ from random  import choice
 from .manager import make_path, clean_subfolders, list_dir
 from config import config
 
-INPUT_PATH = make_path('polyps', 'origin')
-OUTPUT_PATHS = [make_path('polyps', 'training'), make_path('polyps', 'validation'), make_path('polyps', 'test')]
+INPUT_PATH = make_path('polyps', 'origin') #function for creating relative parth
+OUTPUT_PATHS = [make_path('polyps', 'training'), make_path('polyps', 'validation'), make_path('polyps', 'test')] #function for creating relative parth
 
 SUBFOLDERS = list_dir(INPUT_PATH)
 
 
-def rotate(img, rot):
+def rotate(img, rot): #function  for rotating the images
     rows, cols = len(img), len(img[0])
 
     # Rotation
@@ -32,7 +33,7 @@ def rotate(img, rot):
 
     return dst
 
-def split(input_list, perc):
+def split(input_list, perc): #splits the data in the different data sets training, validation and testing depending on the chosen percantage
     split_list = []
 
     for i in range(int(len(input_list)*perc)):
