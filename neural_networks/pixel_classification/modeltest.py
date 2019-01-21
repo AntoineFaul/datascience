@@ -1,7 +1,7 @@
 import model
 from keras.models import Model, load_model
 from keras.callbacks import EarlyStopping, ModelCheckpoint
-from polyps import data_transformation
+from polyps_pixel import data_transformation
 from platform import system as getSystem
 import glob
 import numpy as np
@@ -72,13 +72,13 @@ if __name__ == "__main__":
 
 
     if getSystem() == 'Windows':
-        im = np.array(load_transform_pictures('polyps\\input\\data\\*.jpg'))
-        test = np.array(load_transform_pictures('polyps\\test\\*.jpg'))
-        output="polyps\\output\\"
+        im = np.array(load_transform_pictures('polyps_pixel\\input\\data\\*.jpg'))
+        test = np.array(load_transform_pictures('polyps_pixel\\test\\*.jpg'))
+        output="polyps_pixel\\output\\"
     else:
-        im = np.array(load_transform_pictures('polyps/input/data/*.jpg'))
-        test = np.array(load_transform_pictures('polyps/test/*.jpg'))
-        output = "polyps/output/"
+        im = np.array(load_transform_pictures('polyps_pixel/input/data/*.jpg'))
+        test = np.array(load_transform_pictures('polyps_pixel/test/*.jpg'))
+        output = "polyps_pixel/output/"
 
     model = load_model('model-polyp.h5')
     lab_pred = model.predict(test, verbose=1)

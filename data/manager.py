@@ -49,8 +49,8 @@ def remove_except_files(files):
             files.remove(file)
 
 def load_imgs():
-    img_train = np.array(load_images(make_path('polyps', 'training', 'data')), dtype = config['dtype'])
-    img_val = np.array(load_images(make_path('polyps', 'validation', 'data')), dtype = config['dtype'])
-    img_test = np.array(load_images(make_path('polyps', 'test', 'data')), dtype = config['dtype'])
+    img_train = np.array(load_images(make_path('polyps_pixel', 'training', 'data')), dtype = config['dtype'])
+    img_val = np.array(load_images(make_path('polyps_pixel', 'validation', 'data')), dtype = config['dtype'])
+    img_test = np.array(load_images(make_path('polyps_pixel', 'test', 'data')), dtype = config['dtype'])
 
     return (img_train, img_val, img_test)

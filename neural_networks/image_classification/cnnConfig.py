@@ -26,11 +26,11 @@ default_model = {
     'path_sep': '\\' if getSystem() == 'Windows' else '/',
 
     # Input
-    'folderTest': fm.make_path("polyps_classification", "cnn_dataAugmented", "TestAugmented"),
-    'folderTrain': fm.make_path("polyps_classification", "cnn_dataAugmented", "Train"),
+    'folderTest': fm.make_path("polyps_image", "cnn_dataAugmented", "TestAugmented"),
+    'folderTrain': fm.make_path("polyps_image", "cnn_dataAugmented", "Train"),
 
     # Ouptut
-    'folderModel': fm.make_path("polyps_classification", "output"),
+    'folderModel': fm.make_path("polyps_image", "output"),
     'nameModel': "default_model",
 
     # DataSet loading
@@ -105,11 +105,11 @@ learnOpenCV_model = {
     'path_sep': '\\' if getSystem() == 'Windows' else '/',
 
     # Input
-    'folderTest': fm.make_path("polyps_classification", "cnn_dataAugmented", "TestAugmented"),
-    'folderTrain': fm.make_path("polyps_classification", "cnn_dataAugmented", "Train"),
+    'folderTest': fm.make_path("polyps_image", "cnn_dataAugmented", "TestAugmented"),
+    'folderTrain': fm.make_path("polyps_image", "cnn_dataAugmented", "Train"),
 
     # Ouptut
-    'folderModel': fm.make_path("polyps_classification", "output"),
+    'folderModel': fm.make_path("polyps_image", "output"),
     'nameModel': "learnOpenCV_model",
 
     # DataSet loading
@@ -203,11 +203,11 @@ reduced_model = {
     'path_sep': '\\' if getSystem() == 'Windows' else '/',
 
     # Input
-    'folderTest': fm.make_path("polyps_classification", "cnn_dataAugmented", "TestAugmented"),
-    'folderTrain': fm.make_path("polyps_classification", "cnn_dataAugmented", "Train"),
+    'folderTest': fm.make_path("polyps_image", "cnn_dataAugmented", "TestAugmented"),
+    'folderTrain': fm.make_path("polyps_image", "cnn_dataAugmented", "Train"),
 
     # Ouptut
-    'folderModel': fm.make_path("polyps_classification", "output"),
+    'folderModel': fm.make_path("polyps_image", "output"),
     'nameModel': "reduced_model",
 
     # DataSet loading
@@ -285,11 +285,11 @@ reduced_generator_model = {
     'path_sep': '\\' if getSystem() == 'Windows' else '/',
 
     # Input
-    'folderTest': fm.make_path("polyps_classification", "cnn_dataAugmented", "TestAugmented"),
-    'folderTrain': fm.make_path("polyps_classification", "cnn_dataAugmented", "Train"),
+    'folderTest': fm.make_path("polyps_image", "cnn_dataAugmented", "TestAugmented"),
+    'folderTrain': fm.make_path("polyps_image", "cnn_dataAugmented", "Train"),
 
     # Ouptut
-    'folderModel': fm.make_path("polyps_classification", "output"),
+    'folderModel': fm.make_path("polyps_image", "output"),
     'nameModel': "reduced_generator_model",
 
     # DataSet loading
@@ -367,11 +367,11 @@ reduced_dropOut_model = {
     'path_sep': '\\' if getSystem() == 'Windows' else '/',
 
     # Input
-    'folderTest': fm.make_path("polyps_classification", "cnn_dataAugmented", "TestAugmented"),
-    'folderTrain': fm.make_path("polyps_classification", "cnn_dataAugmented", "Train"),
+    'folderTest': fm.make_path("polyps_image", "cnn_dataAugmented", "TestAugmented"),
+    'folderTrain': fm.make_path("polyps_image", "cnn_dataAugmented", "Train"),
 
     # Ouptut
-    'folderModel': fm.make_path("polyps_classification", "output"),
+    'folderModel': fm.make_path("polyps_image", "output"),
     'nameModel': "reduced_dropOut_model",
 
     # DataSet loading
@@ -453,11 +453,11 @@ final_model = {
     'path_sep': '\\' if getSystem() == 'Windows' else '/',
 
     # Input
-    'folderTest': fm.make_path("polyps_classification", "cnn_dataAugmented", "TestAugmented"),
-    'folderTrain': fm.make_path("polyps_classification", "cnn_dataAugmented", "Train"),
+    'folderTest': fm.make_path("polyps_image", "cnn_dataAugmented", "TestAugmented"),
+    'folderTrain': fm.make_path("polyps_image", "cnn_dataAugmented", "Train"),
 
     # Ouptut
-    'folderModel': fm.make_path("polyps_classification", "output"),
+    'folderModel': fm.make_path("polyps_image", "output"),
     'nameModel': "final_model",
 
     # DataSet loading

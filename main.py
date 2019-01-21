@@ -36,7 +36,7 @@ if __name__ == "__main__":
         c = 0
 
         while (cont):
-            print("\nPlease choose a model to execute:\n\n1 - learnOpenCV_model\n2 - reduced_model\n3 - final_model\n4 - reduced_dropOut_model\n5 - reduced_generator_model")
+            print("\nPlease choose a model to execute:\n\n1 - learnOpenCV_model\n2 - reduced_model\n3 - final_model\n4 - reduced_dropOut_model\n5 - reduced_generator_model\n")
 
             try:
                 c = int(input('Choice = '))
