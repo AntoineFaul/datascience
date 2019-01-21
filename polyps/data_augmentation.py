@@ -4,8 +4,8 @@ from random  import choice
 from polyps.file_manager import make_path, clean_subfolders, list_dir
 from config import config
 
-INPUT_PATH = make_path('polyps', 'origin')
-OUTPUT_PATHS = [make_path('polyps', 'training'), make_path('polyps', 'validation'), make_path('polyps', 'test')]
+INPUT_PATH = make_path('polyps', 'origin', 'data','Clean')
+OUTPUT_PATHS = [make_path('polyps','cnnAugmented', 'Training'), make_path('polyps','cnnAugmented', 'Validation'), make_path('polyps','cnnAugmented','Test')]
 
 SUBFOLDERS = list_dir(INPUT_PATH)
 

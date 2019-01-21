@@ -290,7 +290,6 @@ def plot_fullInformation(predictPerCent, history, predict_succes, predict_fails,
     # print the table
     ax5 = plt.subplot(gs3[0, 0:2])
     ax5.axis('off')
-    color = ['lightgreen', 'mistyrose']
     colorCell = [['white', 'white', 'white'],
                  ['tab:green', 'lightgreen', 'lightgreen'],
                  ['tab:red', 'mistyrose', 'mistyrose']]
@@ -308,7 +307,7 @@ def plot_fullInformation(predictPerCent, history, predict_succes, predict_fails,
 
     # Reading of the summary file
     summary = ""
-    with open(fm.make_path(path, name + '.txt'), 'r') as myfile:
+    with open(fm.make_path(path, name, name + '.txt'), 'r') as myfile:
         summary += myfile.read().replace("=", "*")
 
     ax6 = plt.subplot(gs3[:, 2])

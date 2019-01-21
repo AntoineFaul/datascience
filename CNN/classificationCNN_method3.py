@@ -92,7 +92,7 @@ if __name__ == "__main__":
     model1.summary()
 
     # Open the file
-    with open(fm.make_path(config['folderModel'], config['nameModel'] + '.txt'), 'w') as fh:
+    with open(fm.make_path(config['folderModel'], config['nameModel'], config['nameModel'] + '.txt'), 'w') as fh:
         # Pass the file handle in as a lambda function to make it callable
         model1.summary(print_fn=lambda x: fh.write(x + '\n'))
 
