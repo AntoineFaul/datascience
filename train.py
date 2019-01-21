@@ -8,6 +8,7 @@ from keras import backend as K
 import glob
 import model
 from config import config
+from sklearn.metrics import confusion_matrix
 
 
 def load_transform_pictures(folder):
@@ -18,6 +19,16 @@ def load_transform_pictures(folder):
         x_train.append(im)
 
     return(x_train)
+    
+def create_binary(a, n=1):
+    binary = []
+    for i in range(len(a)):
+    # a : Input array
+    # n : We want n-max element position to be set to 1
+        out = np.zeros_like(a[i])
+        out[np.arange(len(a[i])), np.argpartition(a[i],-n, axis=1)[:,-n]] = 1
+        binary.append(out)
+    return(binary)
 
 def load_file_name(folder):
     x_train = []
@@ -94,7 +105,6 @@ def jacard_coef_loss(y_true, y_pred):
 def result_jaccard_coeff(img1, img2):
     img1_t = K.variable(img1)
     img2_t = K.variable(img2)
-
     return K.eval(jacard_coef(img1_t, img2_t))
 
 
@@ -104,7 +114,7 @@ if __name__ == "__main__":
     batch_size = config['batch_size']
 #    model = model.u_net(IMG_SIZE = config['image_dimension']) #what does the Adam optimizer do
     model = model.u_net_batch_norm_upc()
-    model.compile(optimizer = Adam(lr = 1e-4), loss = config['loss'] , metrics = config['metrics'])
+    model.compile(optimizer = Adam(lr = 1e-2), loss = config['loss'] , metrics = config['metrics'])#4
 
 
     im = np.array(load_transform_pictures(fm.make_path('polyps', 'input', 'data', '*.jpg')))
@@ -113,8 +123,8 @@ if __name__ == "__main__":
     output = fm.make_path('polyps', 'output','data')
     path = fm.make_path('polyps', 'input', 'label')
     path_test = fm.make_path('polyps', 'test', 'label')
-    mask = np.array(data_transformation.create_binary_masks(path = path)) 
-    mask_test = np.array(data_transformation.create_binary_masks(path = path_test))
+    mask = np.array(data_transformation.create_binary_masks(path = path),dtype = "float32") 
+    mask_test = np.array(data_transformation.create_binary_masks(path = path_test),dtype = "float32")
   
     history = model.fit(x = im, y = mask,
                         validation_split = config['validation_split'],
@@ -129,8 +139,8 @@ if __name__ == "__main__":
 
     history = history.history
     lab_pred = model.predict(test, verbose = 1)
-    evaluate = model.evaluate(x = test, y = mask_test, batch_size = batch_size)
+#    evaluate = model.evaluate(x = test, y = mask_test, batch_size = batch_size)
     display_im = write_image(merge(lab_pred), output, test_name)
     plt.imshow(display_im[0])#plots the first picture
     plt.show()
-    print("Evaluation : Loss: "+ str(evaluate[0]) + ", Accuracy: " + str(evaluate[1]) + ", Dice Coefficient: " + str(evaluate[2]) + ", Jacard Coefficient: " + str(evaluate[3]))
+    #print("Evaluation : Loss: "+ str(evaluate[0]) + ", Accuracy: " + str(evaluate[1]) + ", Dice Coefficient: " + str(evaluate[2]) + ", Jacard Coefficient: " + str(evaluate[3]))
