@@ -88,7 +88,7 @@ config = {
 	'image_size': (IMG_MAX_SIZE, IMG_MAX_SIZE),
 	'image_dimension': (IMG_MAX_SIZE, IMG_MAX_SIZE, CHANNELS),
 
-	'multiplier': 1,
+	'multiplier': 24,
 
 	'colors': {
 		'rgb': [(0, 0, 0), (255, 0, 0), (0, 255, 0), (0, 0, 255)],
@@ -107,7 +107,7 @@ config = {
 	},
 
 	'fit': {
-		'epochs': 5,
+		'epochs': 30,
 		'shuffle': True,
 		'batch_size': BATCH_SIZE,
 		'callbacks': [checkpointer], # use checkpointer if you want to save the model
